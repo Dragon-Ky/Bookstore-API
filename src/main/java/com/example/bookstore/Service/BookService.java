@@ -3,6 +3,8 @@ package com.example.bookstore.Service;
 import com.example.bookstore.DTO.Request.BookRequest;
 import com.example.bookstore.DTO.Response.BookResponse;
 import com.example.bookstore.Entity.Book;
+import com.example.bookstore.Exception.AppException;
+import com.example.bookstore.Exception.ErrorCode;
 import com.example.bookstore.Mapper.BookMapper;
 import com.example.bookstore.Repository.BookRepository;
 import lombok.AccessLevel;
@@ -30,8 +32,32 @@ public class BookService {
         return bookMapper.toBookResponse(book);
 
     }
-    public BookResponse getBookDetail(Long id){
-        Book book = bookRepository.findById(id).orElseThrow();
+    private Book checkExitId(Long bookId){
+        return  bookRepository.findById(bookId)
+                .orElseThrow(()->new AppException(ErrorCode.BOOK_NOT_FOUND));
+    }
+    public BookResponse updateBook(Long bookId,BookRequest request){
+        //1. tìm sách trong data bằng id
+        Book book = checkExitId(bookId);
+        //2. cập nhật dữ liệu từ request vào đối tượng book tìm thấy
+        bookMapper.updateBook(book,request);
+        //3. cập nhật số lượng sẵn có
+        book.setAvailableQuantity(request.getTotalQuantity());
+        //4.Lưu vào data
+        book =bookRepository.save(book);
+        //5. trả về kết quả
+        return bookMapper.toBookResponse(book);
+    }
+    public void deleteBook(Long bookId){
+        //1.kiểm tra có tồn tại ko
+        Book book = checkExitId(bookId);
+        //2. set delete true
+        book.setDeleted(true);
+        //3.lưu
+        bookRepository.save(book);
+    }
+    public BookResponse getBookDetail(Long bookId){
+        Book book = checkExitId(bookId);
 
         return bookMapper.toBookResponse(book);
     }
