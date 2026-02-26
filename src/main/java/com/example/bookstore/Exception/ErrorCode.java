@@ -15,6 +15,8 @@ public enum ErrorCode {
     PASSWORD_TOO_WEAK(2005, "Mật khẩu phải bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt"),
     AGE_NOT_NULL(2006,"Vui lòng nhập tuổi"),
     AGE_INVALID(2007, "Tuổi phải nằm trong khoảng từ 5 đến 100"),
+    EMAIL_NOT_EXISTED(2008,"Email không tồn tại"),
+    WRONG_PASSWORD(2009,"Sai mật khẩu"),
 
     BOOK_NOT_EXISTED(3001, "Cuốn sách này không tồn tại trong thư viện"),
     INVALID_TITLE(3002, "Tên sách phải có ít nhất 3 ký tự"),
