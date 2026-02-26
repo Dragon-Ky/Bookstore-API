@@ -23,7 +23,7 @@ public class AuthenticationService {
 
     public String authenticate(AuthenticationRequest request){
         //1. check email có tồn tại ko
-        var user = userRepository.checkEmailExit(request.getEmail());
+        var user = userRepository.findByEmailOrThrow(request.getEmail());
         //2.Kiểm tra mật khẩu (Sử dụng matches để so sánh pass đã mã hóa)
         boolean authenticated=passwordEncoder.matches(request.getPassword(),user.getPassword());
         if (!authenticated){

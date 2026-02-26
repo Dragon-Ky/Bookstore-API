@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<AppUser,Long> {
 
     boolean existsByEmail(String email);
 
-    default AppUser checkEmailExit(String email){
+    default AppUser findByEmailOrThrow(String email){
         return findByEmail(email)
                 .orElseThrow(()->new AppException(ErrorCode.EMAIL_NOT_EXISTED));
     }
