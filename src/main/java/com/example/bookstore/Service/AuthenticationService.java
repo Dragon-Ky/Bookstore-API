@@ -1,14 +1,15 @@
 package com.example.bookstore.Service;
 
 import com.example.bookstore.DTO.Request.AuthenticationRequest;
-import com.example.bookstore.Entity.AppUser;
+
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import com.example.bookstore.Repository.UserRepository;
+import com.example.bookstore.Security.JwtService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.Authentication;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
+    JwtService jwtService;
 
     public String authenticate(AuthenticationRequest request){
         //1. check email có tồn tại ko
@@ -28,10 +30,7 @@ public class AuthenticationService {
             throw  new AppException(ErrorCode.WRONG_PASSWORD);
         }
         //3. nếu đúng thì trả token
-        return generateToken(user);
-    }
-    private String generateToken(AppUser user) {
-        return "fake-token-for-now";
+        return jwtService.generateToken(user.getEmail());
     }
 
 }
