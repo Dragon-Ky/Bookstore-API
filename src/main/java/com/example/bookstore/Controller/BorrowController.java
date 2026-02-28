@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/borrow")
 @RequiredArgsConstructor
@@ -31,6 +33,14 @@ public class BorrowController {
                 .code(1000)
                 .message("Trả sách thành công!")
                 .result(borrowService.returnBook(recordId))
+                .build();
+    }
+
+    @GetMapping("/my-history")
+    public ApiResponse<List<BorrowResponse>> getMyHistory(){
+        return ApiResponse.<List<BorrowResponse>>builder()
+                .code(1000)
+                .message("Xem lịch sử mượn sách thành công")
                 .build();
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,11 @@ public class BorrowService {
         String email = SecurityUtils.getCurrentUserEmail();
         AppUser user = userRepository.findByEmailOrThrow(email);
 
+        // bổ sung check sách
+        long borrowingCount = borrowRepository.countByAppUserEmailAndIsReturnedFalse(email);
+        if (borrowingCount>=5){
+            throw new AppException(ErrorCode.MAX_BORROW_REACHED);
+        }
         //2. kiểm tra sách
         Book book = bookRepository.findByIdOrThrow(request.getBookId());
         if (book.getAvailableQuantity()<=0){
@@ -71,5 +77,12 @@ public class BorrowService {
         borrowRepository.save(record);
 
         return borrowMapper.toResponse(record);
+    }
+    public List<BorrowResponse> getMyHistory(){
+        String email =SecurityUtils.getCurrentUserEmail();
+        return borrowRepository.findAllByAppUserEmailOrderByBorrowDateDesc(email)
+                .stream()
+                .map(borrowMapper::toResponse)
+                .toList();
     }
 }

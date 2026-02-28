@@ -40,9 +40,12 @@ public enum ErrorCode {
     NOT_BLANK_IMG(3008,"Ảnh không được để trống",HttpStatus.NOT_FOUND),
     BOOK_ID_REQUIRED(3009,"Id sách không tồn tại",HttpStatus.NOT_FOUND),
     BOOK_OUT_OF_STOCK(3010,"Sách đã hết hàng" ,HttpStatus.BAD_REQUEST ),
+    MAX_BORROW_REACHED(3011,"Bạn đã đạt giới hạn mượn sách" ,HttpStatus.CONFLICT ),
 
     RECORDID_NOT_FOUND(4001,"Id giao dịch ko tồn tại" ,HttpStatus.NOT_FOUND ),
-    BOOK_ALREADY_RETURNED(4002,"Sách đã được trả về thư viện" ,HttpStatus.CONFLICT );
+    BOOK_ALREADY_RETURNED(4002,"Sách đã được trả về thư viện" ,HttpStatus.CONFLICT ),
+
+    ;
     int code;
     String message;
     HttpStatusCode statusCode;

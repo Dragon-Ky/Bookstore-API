@@ -10,8 +10,12 @@ import java.util.List;
 public interface BorrowRecordRepository extends JpaRepository<BorrowRecord,Long> {
     List<BorrowRecord> findByUserEmailAndIsReturnedFalse(String email);
 
+    long countByAppUserEmailAndIsReturnedFalse(String email);
+
     default BorrowRecord findByIdOrThrow(Long recordId){
         return findById(recordId)
                 .orElseThrow(()->new AppException(ErrorCode.RECORDID_NOT_FOUND));
     }
+
+    List<BorrowRecord> findAllByAppUserEmailOrderByBorrowDateDesc(String email);
 }
