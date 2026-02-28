@@ -1,6 +1,7 @@
 package com.example.bookstore.Repository;
 
 import com.example.bookstore.Entity.BorrowRecord;
+import com.example.bookstore.Entity.ENUM.BorrowStatus;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,14 +9,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface BorrowRecordRepository extends JpaRepository<BorrowRecord,Long> {
-    List<BorrowRecord> findByUserEmailAndIsReturnedFalse(String email);
+    List<BorrowRecord> findByUserEmailAndStatus(String email,BorrowStatus status);
 
-    long countByAppUserEmailAndIsReturnedFalse(String email);
+    long countByUserEmailAndStatus(String email , BorrowStatus status);
 
     default BorrowRecord findByIdOrThrow(Long recordId){
         return findById(recordId)
                 .orElseThrow(()->new AppException(ErrorCode.RECORDID_NOT_FOUND));
     }
 
-    List<BorrowRecord> findAllByAppUserEmailOrderByBorrowDateDesc(String email);
+    List<BorrowRecord> findAllByUserEmailOrderByBorrowDateDesc(String email);
 }

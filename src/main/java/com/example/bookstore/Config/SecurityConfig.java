@@ -22,16 +22,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
     JwtAuthFilter jwtAuthFilter;
-    @Bean //khai báo để khỏi sài new
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.csrf(csrf->csrf.disable());//tắt csrf để test API
-        // Cấu hình tạm thời: Cho phép tất cả mọi người vào mọi link
-        http.authorizeHttpRequests(auth->auth.anyRequest().permitAll()
-                .anyRequest().authenticated()
-        ).exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable());
+
+        http.authorizeHttpRequests(auth -> auth
+                        // 1. Khai báo các đường dẫn không cần đăng nhập trước
+                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        // 2. Tất cả các request còn lại PHẢI đăng nhập
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-    
+
 }

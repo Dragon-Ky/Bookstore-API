@@ -38,7 +38,7 @@ public class BorrowService {
         AppUser user = userRepository.findByEmailOrThrow(email);
 
         // bổ sung check sách
-        long borrowingCount = borrowRepository.countByAppUserEmailAndIsReturnedFalse(email);
+        long borrowingCount = borrowRepository.countByUserEmailAndStatus(email,BorrowStatus.BORROWING);
         if (borrowingCount>=5){
             throw new AppException(ErrorCode.MAX_BORROW_REACHED);
         }
@@ -80,7 +80,7 @@ public class BorrowService {
     }
     public List<BorrowResponse> getMyHistory(){
         String email =SecurityUtils.getCurrentUserEmail();
-        return borrowRepository.findAllByAppUserEmailOrderByBorrowDateDesc(email)
+        return borrowRepository.findAllByUserEmailOrderByBorrowDateDesc(email)
                 .stream()
                 .map(borrowMapper::toResponse)
                 .toList();
