@@ -1,4 +1,4 @@
-package com.example.bookstore.Service;
+package com.example.bookstore.Service.User;
 
 import com.example.bookstore.DTO.Request.AuthenticationRequest;
 import com.example.bookstore.DTO.Request.Creation.UserCreationRequest;

@@ -3,7 +3,7 @@ package com.example.bookstore.Controller;
 import com.example.bookstore.DTO.ApiResponse;
 import com.example.bookstore.DTO.Request.BookRequest;
 import com.example.bookstore.DTO.Response.BookResponse;
-import com.example.bookstore.Service.BookService;
+import com.example.bookstore.Service.Book.BookService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.Builder;

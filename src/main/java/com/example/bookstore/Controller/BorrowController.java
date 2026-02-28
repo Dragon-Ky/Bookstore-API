@@ -1,0 +1,28 @@
+package com.example.bookstore.Controller;
+
+import com.example.bookstore.DTO.ApiResponse;
+import com.example.bookstore.DTO.Request.BorrowRequest;
+import com.example.bookstore.DTO.Response.BorrowResponse;
+import com.example.bookstore.Service.BorrowService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/borrow")
+@RequiredArgsConstructor
+public class BorrowController {
+    BorrowService borrowService;
+
+    @PostMapping
+    public ApiResponse<BorrowResponse> borrowBook(@RequestBody @Valid BorrowRequest request){
+        return ApiResponse.<BorrowResponse> builder()
+                .code(1000)
+                .message("Mượn sách thành công!")
+                .result(borrowService.borrowBook(request))
+                .build();
+    }
+}

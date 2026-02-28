@@ -1,4 +1,4 @@
-package com.example.bookstore.Service;
+package com.example.bookstore.Service.Book;
 
 import com.example.bookstore.DTO.Request.BookRequest;
 import com.example.bookstore.DTO.Response.BookResponse;
@@ -10,7 +10,6 @@ import com.example.bookstore.Repository.BookRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
