@@ -1,11 +1,13 @@
 package com.example.bookstore.Config;
 
 import com.example.bookstore.Security.JwtAuthFilter;
+import com.example.bookstore.Security.JwtAuthenticationEntryPoint;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration // mở file ra đọc liền
 @EnableWebSecurity // bật rào chắn bảo mật api
 @RequiredArgsConstructor
+@EnableMethodSecurity
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
     JwtAuthFilter jwtAuthFilter;
@@ -25,7 +28,8 @@ public class SecurityConfig {
         // Cấu hình tạm thời: Cho phép tất cả mọi người vào mọi link
         http.authorizeHttpRequests(auth->auth.anyRequest().permitAll()
                 .anyRequest().authenticated()
-        ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        ).exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

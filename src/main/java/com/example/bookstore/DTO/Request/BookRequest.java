@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookRequest {
+    @NotBlank(message="NOT_BLANK_IMG")
+    String image;
     @NotBlank(message = "NOT_BLANK_TITLE")
     @Size(min = 3, max = 100, message = "INVALID_TITLE")
     String title;

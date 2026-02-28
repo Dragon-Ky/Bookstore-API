@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookResponse {
      Long id;
+     String image;
      String title;
      String author;
      int availableQuantity; // Chỉ trả về số lượng còn lại, không cần trả về total

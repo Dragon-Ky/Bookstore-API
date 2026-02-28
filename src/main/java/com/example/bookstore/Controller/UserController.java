@@ -5,7 +5,7 @@ import com.example.bookstore.DTO.Request.AuthenticationRequest;
 import com.example.bookstore.DTO.Request.Creation.UserCreationRequest;
 import com.example.bookstore.DTO.Response.LoginResponse;
 import com.example.bookstore.DTO.Response.UserResponse;
-import com.example.bookstore.Exception.AppException;
+
 import com.example.bookstore.Service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
