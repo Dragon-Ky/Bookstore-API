@@ -5,6 +5,7 @@ import com.example.bookstore.DTO.Response.BorrowResponse;
 import com.example.bookstore.Entity.AppUser;
 import com.example.bookstore.Entity.Book;
 import com.example.bookstore.Entity.BorrowRecord;
+import com.example.bookstore.Entity.ENUM.BorrowStatus;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import com.example.bookstore.Mapper.BorrowMapper;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +47,27 @@ public class BorrowService {
 
         //4 Tạo phiếu mượn sách
         BorrowRecord record = borrowMapper.toBorrow(user,book);
+        borrowRepository.save(record);
+
+        return borrowMapper.toResponse(record);
+    }
+    @Transactional
+    public BorrowResponse returnBook(Long recordId){
+        //1. tìm phiếu mượn sách
+        BorrowRecord record = borrowRepository.findByIdOrThrow(recordId);
+        //2. kiểm tra lại sách đã chưa ( tránh trả 2 lần )
+        if (record.getStatus().equals(BorrowStatus.RETURNED)){
+            throw new AppException(ErrorCode.BOOK_ALREADY_RETURNED);
+        }
+        //3. đánh đấu trả lại cùng thời gian
+        record.getStatus().equals(BorrowStatus.RETURNED);
+        record.setDueDate(LocalDateTime.now());
+        //4. thêm sách vào lại kho
+        Book book = record.getBook();
+        book.setAvailableQuantity(book.getAvailableQuantity()+1);
+
+        //5. lưu sách và phiếu
+        bookRepository.save(book);
         borrowRepository.save(record);
 
         return borrowMapper.toResponse(record);

@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 public class BookRequest {
     @NotBlank(message="NOT_BLANK_IMG")
     String image;
+
     @NotBlank(message = "NOT_BLANK_TITLE")
     @Size(min = 3, max = 100, message = "INVALID_TITLE")
     String title;
@@ -20,7 +21,7 @@ public class BookRequest {
     @NotBlank(message = "NOT_BLANK_AUTHOR")
     String author;
 
-    @NotBlank(message = "NOT_NULL_CATEGORY")
+    @NotNull(message = "NOT_NULL_CATEGORY")
     String category;
 
     @Min(value = 1, message = "QUANTITY_INVALID")

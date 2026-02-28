@@ -6,7 +6,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
+@Table(name = "User")
 @Getter @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)

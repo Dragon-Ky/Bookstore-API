@@ -1,5 +1,6 @@
 package com.example.bookstore.Entity;
 
+import com.example.bookstore.Entity.ENUM.BorrowStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -7,7 +8,9 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "borrow_records")
 @Getter @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -16,13 +19,21 @@ public class BorrowRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     AppUser user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", nullable = false)
     Book book;
 
+    @Column(nullable = false)
     LocalDateTime borrowDate;
+
+    @Column(nullable = false)
     LocalDateTime dueDate;
-    boolean isReturned = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    BorrowStatus status = BorrowStatus.BORROWING;
 }
