@@ -11,4 +11,13 @@ import lombok.experimental.FieldDefaults;
 public class LoginResponse {
     String token;
     boolean authenticated;
+    String role;
+
+    public static LoginResponse of(String token ,String role){
+        return LoginResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .role(role)
+                .build();
+    }
 }

@@ -24,6 +24,9 @@ public class BookRequest {
     @NotNull(message = "NOT_NULL_CATEGORY")
     String category;
 
+    @NotBlank(message = "NOT_BLANK_DESCRIPTION")
+    String description;
+
     @Min(value = 1, message = "QUANTITY_INVALID")
     int totalQuantity;
 }

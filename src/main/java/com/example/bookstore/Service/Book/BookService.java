@@ -10,7 +10,12 @@ import com.example.bookstore.Repository.BookRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor // Tự tạo constructor cho các field 'final'
@@ -20,6 +25,7 @@ public class BookService {
 
     final BookMapper bookMapper;
 
+    @Transactional
     public BookResponse creatBook(BookRequest request){
         // 1. Chuyển từ DTO sang Entity nhờ MapStruct
         Book book = bookMapper.toBook(request);
@@ -35,6 +41,7 @@ public class BookService {
         return  bookRepository.findById(bookId)
                 .orElseThrow(()->new AppException(ErrorCode.BOOK_NOT_FOUND));
     }
+    @Transactional
     public BookResponse updateBook(Long bookId,BookRequest request){
         //1. tìm sách trong data bằng id
         Book book = checkExitId(bookId);
@@ -47,6 +54,7 @@ public class BookService {
         //5. trả về kết quả
         return bookMapper.toBookResponse(book);
     }
+    @Transactional
     public void deleteBook(Long bookId){
         //1.kiểm tra có tồn tại ko
         Book book = checkExitId(bookId);
@@ -59,5 +67,18 @@ public class BookService {
         Book book = checkExitId(bookId);
 
         return bookMapper.toBookResponse(book);
+    }
+
+    public Page<BookResponse> getAllBooks(int page,int size){
+        // Tạo đối tượng Pageable (trang bắt đầu từ 0)
+        Pageable pageable = PageRequest.of(page-1,size, Sort.by("id").descending());
+        // Gọi repository lấy dữ liệu phân trang
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+        // Chuyển đổi từ Page<Book> (Entity) sang Page<BookResponse> (DTO)
+        return bookPage.map(bookMapper::toBookResponse);
+    }
+    public Page<BookResponse> getAllBooksPaging(int page,int size){
+        Pageable pageable = PageRequest.of(page - 1, size); // page - 1 vì Spring tính từ 0
+        return bookRepository.findAll(pageable).map(bookMapper::toBookResponse);
     }
 }

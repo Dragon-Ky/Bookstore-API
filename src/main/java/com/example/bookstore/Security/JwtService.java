@@ -1,5 +1,6 @@
 package com.example.bookstore.Security;
 
+import com.example.bookstore.Entity.AppUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
@@ -26,15 +27,16 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
 
     }
-    public String generateToken(String username){
+    public String generateToken(AppUser user){
         //1.dùng Instant thay cho date
         Instant now = Instant.now();
         Instant expiry = now.plusMillis(jwtProperties.getExpirationMs());
 
         return Jwts.builder() //bắt đầu build token
-                .subject(username)  //setSubject = name
+                .subject(user.getEmail())  //setSubject = name
                 .issuedAt(Date.from(now)) // thời gian hiện tại
                 .expiration(Date.from(expiry)) // thời gian hết hạn
+                .claim("roles",user.getRole())
                 .signWith(getSigningKey())// Bản mới tự nhận diện thuật toán từ Key, không cần HS256
                 .compact();
     }

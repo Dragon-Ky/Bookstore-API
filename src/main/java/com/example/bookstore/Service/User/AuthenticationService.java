@@ -2,6 +2,7 @@ package com.example.bookstore.Service.User;
 
 import com.example.bookstore.DTO.Request.AuthenticationRequest;
 
+import com.example.bookstore.DTO.Response.LoginResponse;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import com.example.bookstore.Repository.UserRepository;
@@ -21,7 +22,7 @@ public class AuthenticationService {
     UserRepository userRepository;
     JwtService jwtService;
 
-    public String authenticate(AuthenticationRequest request){
+    public LoginResponse authenticate(AuthenticationRequest request){
         //1. check email có tồn tại ko
         var user = userRepository.findByEmailOrThrow(request.getEmail());
         //2.Kiểm tra mật khẩu (Sử dụng matches để so sánh pass đã mã hóa)
@@ -29,8 +30,9 @@ public class AuthenticationService {
         if (!authenticated){
             throw  new AppException(ErrorCode.WRONG_PASSWORD);
         }
+        String token = jwtService.generateToken(user);
         //3. nếu đúng thì trả token
-        return jwtService.generateToken(user.getEmail());
+        return LoginResponse.of(token,user.getRole().name());
     }
 
 }

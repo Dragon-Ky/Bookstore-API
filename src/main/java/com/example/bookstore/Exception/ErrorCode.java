@@ -41,6 +41,7 @@ public enum ErrorCode {
     BOOK_ID_REQUIRED(3009,"Id sách không tồn tại",HttpStatus.NOT_FOUND),
     BOOK_OUT_OF_STOCK(3010,"Sách đã hết hàng" ,HttpStatus.BAD_REQUEST ),
     MAX_BORROW_REACHED(3011,"Bạn đã đạt giới hạn mượn sách" ,HttpStatus.CONFLICT ),
+    NOT_BLANK_DESCRIPTION(3012,"không được để tiêu đề trống",HttpStatus.NOT_FOUND),
 
     RECORDID_NOT_FOUND(4001,"Id giao dịch ko tồn tại" ,HttpStatus.NOT_FOUND ),
     BOOK_ALREADY_RETURNED(4002,"Sách đã được trả về thư viện" ,HttpStatus.CONFLICT ),

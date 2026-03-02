@@ -55,12 +55,9 @@ public class UserService {
             throw new AppException(ErrorCode.WRONG_PASSWORD);
         }
         //3.Tạo token
-        String token = jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user);
         //4.trả về Response
-        return LoginResponse.builder()
-                .token(token)
-                .authenticated(true)
-                .build();
+        return LoginResponse.of(token,user.getRole().name());
     }
     public UserResponse getUserById(Long userId){
         AppUser user = userRepository.findById(userId)

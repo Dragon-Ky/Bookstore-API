@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @Builder
@@ -20,6 +21,7 @@ public class BookController {
     BookService bookService;
     @PostMapping
     public ApiResponse<BookResponse> createBook(@RequestBody @Valid BookRequest request){
+
         return ApiResponse.<BookResponse>builder()
                 .code(1000)
                 .message("Thêm sách thành công!")
@@ -48,4 +50,25 @@ public class BookController {
                 .result("Sách có ID " + bookId + " đã được đưa vào thùng rác.")
                 .build();
     }
+    @GetMapping
+    public ApiResponse<Page<BookResponse>> getAllBooks(
+            @RequestParam(value = "page",defaultValue = "1") int page,
+            @RequestParam(value = "size",defaultValue = "10") int size
+    ){
+        return ApiResponse.<Page<BookResponse>>builder()
+                .code(1000)
+                .message("Lấy danh sách thành công")
+                .result(bookService.getAllBooks(page,size))
+                .build();
+    }
+//    @GetMapping
+//    public ApiResponse<Page<BookResponse>> getBooks(
+//            @RequestParam(value = "page", defaultValue = "1") int page,
+//            @RequestParam(value = "size", defaultValue = "10") int size
+//    ) {
+//        return ApiResponse.<Page<BookResponse>>builder()
+//                .code(1000)
+//                .result(bookService.getAllBooksPaging(page, size))
+//                .build();
+//    }
 }

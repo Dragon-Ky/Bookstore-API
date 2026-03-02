@@ -15,5 +15,9 @@ public class BookResponse {
      String image;
      String title;
      String author;
+     String category;
+     String description;
+
+     int totalQuantity;
      int availableQuantity; // Chỉ trả về số lượng còn lại, không cần trả về total
 }

@@ -42,6 +42,7 @@ public class UserController {
         LoginResponse result = userService.login(request);
 
         return ApiResponse.<LoginResponse>builder()
+                .code(1000)
                 .result(result)
                 .message("Chào mừng bạn quay trở lại!")
                 .build();

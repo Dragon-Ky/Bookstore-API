@@ -19,10 +19,14 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @Lob // Đánh dấu đây là đối tượng lớn
+    @Column(name = "image", columnDefinition = "LONGTEXT")
     String image;
+
     String title;
     String author;
     String category;
+    String description;
 
     int totalQuantity;
 
