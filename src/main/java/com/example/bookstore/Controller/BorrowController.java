@@ -5,7 +5,9 @@ import com.example.bookstore.DTO.Request.BorrowRequest;
 import com.example.bookstore.DTO.Response.BorrowResponse;
 import com.example.bookstore.Service.BorrowService;
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/borrow")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class BorrowController {
     BorrowService borrowService;
 

@@ -26,6 +26,7 @@ public class Book {
     String title;
     String author;
     String category;
+    @Column(columnDefinition = "TEXT")
     String description;
 
     int totalQuantity;

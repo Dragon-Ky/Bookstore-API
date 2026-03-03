@@ -3,6 +3,7 @@ package com.example.bookstore.Controller;
 import com.example.bookstore.DTO.ApiResponse;
 import com.example.bookstore.DTO.Request.BookRequest;
 import com.example.bookstore.DTO.Response.BookResponse;
+import com.example.bookstore.Entity.Book;
 import com.example.bookstore.Service.Book.BookService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -19,6 +20,14 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class BookController {
     BookService bookService;
+    @GetMapping("/{id}")
+    public ApiResponse<Object> getBookById(@PathVariable("id") Long bookId){
+        return ApiResponse.builder()
+                .code(1000)
+                .message("Tìm thấy sách")
+                .result(bookService.getBookById(bookId))
+                .build();
+    }
     @PostMapping
     public ApiResponse<BookResponse> createBook(@RequestBody @Valid BookRequest request){
 

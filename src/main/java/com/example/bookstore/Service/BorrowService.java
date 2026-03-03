@@ -37,6 +37,16 @@ public class BorrowService {
         String email = SecurityUtils.getCurrentUserEmail();
         AppUser user = userRepository.findByEmailOrThrow(email);
 
+        // check trùng sách
+        boolean isAlreadyBorrowing = borrowRepository.existsByUserEmailAndBookIdAndStatus(
+                email,
+                request.getBookId(),
+                BorrowStatus.BORROWING
+        );
+
+        if (isAlreadyBorrowing) {
+            throw new AppException(ErrorCode.BOOK_ALREADY_BORROWED);
+        }
         // bổ sung check sách
         long borrowingCount = borrowRepository.countByUserEmailAndStatus(email,BorrowStatus.BORROWING);
         if (borrowingCount>=5){
@@ -53,6 +63,9 @@ public class BorrowService {
 
         //4 Tạo phiếu mượn sách
         BorrowRecord record = borrowMapper.toBorrow(user,book);
+        record.setBorrowDate(LocalDateTime.now()); // Ngày mượn là hiện tại
+        record.setDueDate(LocalDateTime.now().plusDays(7)); // Hạn trả là 14 ngày sau
+        record.setStatus(BorrowStatus.BORROWING);
         borrowRepository.save(record);
 
         return borrowMapper.toResponse(record);

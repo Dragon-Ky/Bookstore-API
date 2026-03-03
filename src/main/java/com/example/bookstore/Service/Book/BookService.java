@@ -81,4 +81,7 @@ public class BookService {
         Pageable pageable = PageRequest.of(page - 1, size); // page - 1 vì Spring tính từ 0
         return bookRepository.findAll(pageable).map(bookMapper::toBookResponse);
     }
+    public Book getBookById(Long bookId){
+        return bookRepository.findByIdOrThrow(bookId);
+    }
 }
