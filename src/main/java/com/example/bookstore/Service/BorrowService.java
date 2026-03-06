@@ -78,9 +78,10 @@ public class BorrowService {
         if (record.getStatus().equals(BorrowStatus.RETURNED)){
             throw new AppException(ErrorCode.BOOK_ALREADY_RETURNED);
         }
+        record.setStatus(BorrowStatus.RETURNED);
         //3. đánh đấu trả lại cùng thời gian
         record.getStatus().equals(BorrowStatus.RETURNED);
-        record.setDueDate(LocalDateTime.now());
+        record.setReturnDate(LocalDateTime.now());
         //4. thêm sách vào lại kho
         Book book = record.getBook();
         book.setAvailableQuantity(book.getAvailableQuantity()+1);
@@ -116,6 +117,9 @@ public class BorrowService {
         }
         // 3. Cập nhật trạng thái thành LOST (Mất sách)
         record.setStatus(BorrowStatus.LOST);
+        // cập nhật thời gian người dùng báo
+        record.getStatus().equals(BorrowStatus.RETURNED);
+        record.setReturnDate(LocalDateTime.now());
         // 4. Lưu thay đổi trạng thái vào cơ sở dữ liệu
         borrowRepository.save(record);
 

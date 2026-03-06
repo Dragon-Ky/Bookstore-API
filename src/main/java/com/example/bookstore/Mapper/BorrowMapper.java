@@ -11,10 +11,7 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BorrowMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "user", source = "user")
-    @Mapping(target = "book", source = "book")
-    @Mapping(target = "borrowDate", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "dueDate", expression = "java(java.time.LocalDateTime.now().plusDays(14))")
+    @Mapping(target = "status", constant = "BORROWING")
     BorrowRecord toBorrow(AppUser user, Book book);
 
     @Mapping(target = "user.name", source = "user.name")

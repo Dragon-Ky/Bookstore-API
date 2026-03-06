@@ -33,6 +33,9 @@ public class BorrowRecord {
     @Column(nullable = false)
     LocalDateTime dueDate;
 
+    @Column(nullable = false)
+    LocalDateTime returnDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     BorrowStatus status = BorrowStatus.BORROWING;

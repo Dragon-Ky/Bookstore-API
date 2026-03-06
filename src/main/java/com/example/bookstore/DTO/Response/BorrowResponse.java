@@ -23,6 +23,9 @@ public class BorrowResponse {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime dueDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime returnDate;
+
     BorrowStatus status;
 
 }
