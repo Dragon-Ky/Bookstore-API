@@ -99,7 +99,7 @@ public class BorrowService {
                 .toList();
     }
     public List<BorrowResponse> getAllHistory(){
-        return borrowRepository.findAllOrderByBorrowDateDesc()
+        return borrowRepository.findAllByOrderByBorrowDateDesc()
                 .stream()
                 .map(borrowMapper::toResponse)
                 .toList();
