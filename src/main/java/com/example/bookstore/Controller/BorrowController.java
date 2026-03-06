@@ -45,6 +45,7 @@ public class BorrowController {
         return ApiResponse.<List<BorrowResponse>>builder()
                 .code(1000)
                 .message("Xem lịch sử mượn sách thành công")
+                .result(borrowService.getMyHistory())
                 .build();
     }
     @GetMapping("/all-history")
