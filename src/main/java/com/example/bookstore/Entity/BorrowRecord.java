@@ -33,7 +33,7 @@ public class BorrowRecord {
     @Column(nullable = false)
     LocalDateTime dueDate;
 
-    @Column(nullable = false)
+    @Column(name = "return_date", nullable = true)
     LocalDateTime returnDate;
 
     @Enumerated(EnumType.STRING)
