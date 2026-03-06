@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BorrowResponse {
     Long id;
-    String userEmail;
+    UserResponse user;
     String bookTitle;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // trả về định dạng đẹp hơn

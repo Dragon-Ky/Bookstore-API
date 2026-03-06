@@ -17,7 +17,8 @@ public interface BorrowMapper {
     @Mapping(target = "dueDate", expression = "java(java.time.LocalDateTime.now().plusDays(14))")
     BorrowRecord toBorrow(AppUser user, Book book);
 
-    @Mapping(target = "userEmail", source = "user.email")
+    @Mapping(target = "user.name", source = "user.name")
+    @Mapping(target = "user.email", source = "user.email")
     @Mapping(target = "bookTitle", source = "book.title")
     BorrowResponse toResponse(BorrowRecord record);
 }
