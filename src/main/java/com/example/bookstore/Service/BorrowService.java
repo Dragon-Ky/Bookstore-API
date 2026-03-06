@@ -98,4 +98,27 @@ public class BorrowService {
                 .map(borrowMapper::toResponse)
                 .toList();
     }
+    public List<BorrowResponse> getAllHistory(){
+        return borrowRepository.findAllOrderByBorrowDateDesc()
+                .stream()
+                .map(borrowMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional
+    public BorrowResponse reportLost(Long recordId){
+        // 1. Tìm phiếu mượn sách theo ID, nếu không thấy sẽ ném ngoại lệ
+        BorrowRecord record = borrowRepository.findByIdOrThrow(recordId);
+        // 2. Kiểm tra nếu sách đã trả hoặc đã báo mất rồi thì không xử lý nữa
+        if (record.getStatus().equals(BorrowStatus.RETURNED) ||
+            record.getStatus().equals(BorrowStatus.LOST)){
+            throw new AppException(ErrorCode.INVALID_STATUS_CHANGE);
+        }
+        // 3. Cập nhật trạng thái thành LOST (Mất sách)
+        record.setStatus(BorrowStatus.LOST);
+        // 4. Lưu thay đổi trạng thái vào cơ sở dữ liệu
+        borrowRepository.save(record);
+
+        return borrowMapper.toResponse(record);
+    }
 }

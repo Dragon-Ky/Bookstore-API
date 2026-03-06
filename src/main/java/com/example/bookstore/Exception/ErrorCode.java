@@ -46,8 +46,8 @@ public enum ErrorCode {
 
     RECORDID_NOT_FOUND(4001,"Id giao dịch ko tồn tại" ,HttpStatus.NOT_FOUND ),
     BOOK_ALREADY_RETURNED(4002,"Sách đã được trả về thư viện" ,HttpStatus.CONFLICT ),
+    INVALID_STATUS_CHANGE(4003,"Task đã được chỉnh sữa" ,HttpStatus.CONFLICT );
 
-    ;
     int code;
     String message;
     HttpStatusCode statusCode;

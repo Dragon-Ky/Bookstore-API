@@ -20,6 +20,9 @@ public interface BorrowRecordRepository extends JpaRepository<BorrowRecord,Long>
 
     List<BorrowRecord> findAllByUserEmailOrderByBorrowDateDesc(String email);
 
+    List<BorrowRecord> findAllOrderByBorrowDateDesc();
     // Kiểm tra xem đã tồn tại bản ghi mượn cuốn sách này mà chưa trả hay chưa
     boolean existsByUserEmailAndBookIdAndStatus(String email, Long bookId, BorrowStatus status);
+
+
 }

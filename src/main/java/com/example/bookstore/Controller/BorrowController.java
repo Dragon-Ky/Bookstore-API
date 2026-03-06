@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,6 +45,26 @@ public class BorrowController {
         return ApiResponse.<List<BorrowResponse>>builder()
                 .code(1000)
                 .message("Xem lịch sử mượn sách thành công")
+                .build();
+    }
+    @GetMapping("/all-history")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<List<BorrowResponse>> getAllHistory() {
+        return ApiResponse.<List<BorrowResponse>>builder()
+                .code(1000)
+                .message("Lấy toàn bộ lịch sử thành công")
+                // Gọi service để lấy dữ liệu
+                .result(borrowService.getAllHistory())
+                .build();
+    }
+    @PostMapping("/{recordId}/lost")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<BorrowResponse> reportLost(@PathVariable Long recordId) {
+        return ApiResponse.<BorrowResponse>builder()
+                .code(1000)
+                .message("Đã ghi nhận trạng thái mất sách")
+                // Gọi service xử lý logic mất sách
+                .result(borrowService.reportLost(recordId))
                 .build();
     }
 }
