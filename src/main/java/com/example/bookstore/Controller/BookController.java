@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "https://front-end-library.onrender.com")
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class BookController {
     BookService bookService;
