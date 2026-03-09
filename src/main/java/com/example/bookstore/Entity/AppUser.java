@@ -6,7 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "User")
+@Table(name = "Users")
 @Getter @Setter
 @Builder
 @AllArgsConstructor
