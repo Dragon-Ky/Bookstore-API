@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
-@Table(name = "Book")
+@Table(name = "book")
 @Getter
 @Setter // Hoặc đặt Setter riêng cho từng field bên dưới
 @NoArgsConstructor // Cần thiết cho JPA
