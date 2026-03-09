@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/borrow")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class BorrowController {
     BorrowService borrowService;
