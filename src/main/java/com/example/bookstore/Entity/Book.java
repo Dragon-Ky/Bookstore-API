@@ -20,7 +20,8 @@ public class Book {
     Long id;
 
     @Lob // Đánh dấu đây là đối tượng lớn
-    @Column(name = "image", columnDefinition = "LONGTEXT")
+    // mysql @Column(name = "image", columnDefinition = "LONGTEXT")
+    @Column(name = "image", columnDefinition = "TEXT") //post
     String image;
 
     String title;
