@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "borrow_records")
+@Table(name = "borrow_record")
 @Getter @Setter
 @Builder
 @AllArgsConstructor
