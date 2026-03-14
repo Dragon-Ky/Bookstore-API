@@ -92,6 +92,7 @@ public class BorrowService {
 
         return borrowMapper.toResponse(record);
     }
+    @Transactional(readOnly = true)
     public List<BorrowResponse> getMyHistory(){
         String email =SecurityUtils.getCurrentUserEmail();
         return borrowRepository.findAllByUserEmailOrderByBorrowDateDesc(email)
@@ -99,6 +100,7 @@ public class BorrowService {
                 .map(borrowMapper::toResponse)
                 .toList();
     }
+    @Transactional(readOnly = true)
     public List<BorrowResponse> getAllHistory(){
         return borrowRepository.findAllByOrderByBorrowDateDesc()
                 .stream()

@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface BorrowRecordRepository extends JpaRepository<BorrowRecord,Long> {
-    List<BorrowRecord> findByUserEmailAndStatus(String email,BorrowStatus status);
+    List<BorrowRecord> findByUserEmailIgnoreCaseAndStatus(String email,BorrowStatus status);
 
     long countByUserEmailAndStatus(String email , BorrowStatus status);
 
