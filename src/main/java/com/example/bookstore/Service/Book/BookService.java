@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -87,14 +88,21 @@ public class BookService {
         return bookRepository.findByIdOrThrow(bookId);
     }
 
-    public List<BookResponse> searchBooks(String keyword){
-        List<Book> books;
-        if (keyword == null || keyword.trim().isEmpty()){
-            books= bookRepository.findAll();
-        }else {
-            books=bookRepository.searchByKeyword(keyword);
+    public List<BookResponse> searchBooks(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return bookRepository.findAll().stream().map(bookMapper::toBookResponse).toList();
         }
-        return books.stream()
+
+        // Tách từ khóa bằng dấu cách: "Java Web" -> ["Java", "Web"]
+        String[] words = keyword.split("\\s+");
+
+
+        return bookRepository.findAll().stream()
+                .filter(book -> {
+                    String content = (book.getTitle() + " " + book.getAuthor()).toLowerCase();
+                    // Chỉ cần chứa 1 trong các từ khóa là giữ lại
+                    return Arrays.stream(words).anyMatch(word -> content.contains(word.toLowerCase()));
+                })
                 .map(bookMapper::toBookResponse)
                 .toList();
     }
