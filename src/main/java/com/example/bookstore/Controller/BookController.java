@@ -13,6 +13,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Builder
 @RestController
 @RequestMapping("/books")
@@ -51,7 +53,7 @@ public class BookController {
                 .build();
     }
     @DeleteMapping("/{bookId}")
-    public ApiResponse<String> deleteBook(@PathVariable Long bookId){
+    public ApiResponse<String> deleteBook(@PathVariable("id") Long bookId){
         bookService.deleteBook(bookId);
 
         return ApiResponse.<String>builder()
@@ -71,14 +73,12 @@ public class BookController {
                 .result(bookService.getAllBooks(page,size))
                 .build();
     }
-//    @GetMapping
-//    public ApiResponse<Page<BookResponse>> getBooks(
-//            @RequestParam(value = "page", defaultValue = "1") int page,
-//            @RequestParam(value = "size", defaultValue = "10") int size
-//    ) {
-//        return ApiResponse.<Page<BookResponse>>builder()
-//                .code(1000)
-//                .result(bookService.getAllBooksPaging(page, size))
-//                .build();
-//    }
+    @GetMapping("/search")
+    public ApiResponse<List<BookResponse>> searchBooks(@RequestParam(required = false)String keyword){
+        return ApiResponse.<List<BookResponse>>builder()
+                .code(1000)
+                .message("Tìm sách thành công")
+                .result(bookService.searchBooks(keyword))
+                .build();
+    }
 }

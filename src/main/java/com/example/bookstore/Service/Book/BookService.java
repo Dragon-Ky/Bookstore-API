@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor // Tự tạo constructor cho các field 'final'
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -83,5 +85,17 @@ public class BookService {
     }
     public Book getBookById(Long bookId){
         return bookRepository.findByIdOrThrow(bookId);
+    }
+
+    public List<BookResponse> searchBooks(String keyword){
+        List<Book> books;
+        if (keyword == null || keyword.trim().isEmpty()){
+            books= bookRepository.findAll();
+        }else {
+            books=bookRepository.findByTitleContainingIgnoreCase(keyword);
+        }
+        return books.stream()
+                .map(bookMapper::toBookResponse)
+                .toList();
     }
 }
