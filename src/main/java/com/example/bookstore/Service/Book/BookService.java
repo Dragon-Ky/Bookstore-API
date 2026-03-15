@@ -92,7 +92,7 @@ public class BookService {
         if (keyword == null || keyword.trim().isEmpty()){
             books= bookRepository.findAll();
         }else {
-            books=bookRepository.findByTitleContainingIgnoreCase(keyword);
+            books=bookRepository.searchByKeyword(keyword);
         }
         return books.stream()
                 .map(bookMapper::toBookResponse)

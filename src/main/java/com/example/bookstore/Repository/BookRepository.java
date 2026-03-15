@@ -6,6 +6,8 @@ import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,8 +20,10 @@ public interface BookRepository extends JpaRepository<Book,Long>{
         return findById(bookId)
                 .orElseThrow(()->new AppException(ErrorCode.BOOK_ID_REQUIRED));
     }
-    //SELECT * FROM book WHERE LOWER(title) LIKE LOWER('%keyword%')
-    List<Book> findByTitleContainingIgnoreCase(String title);
+    @Query("SELECT b FROM Book b WHERE " +
+            "LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(b.author) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Book> searchByKeyword(@Param("keyword") String keyword);
 
     List<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String title, String author);
 }
