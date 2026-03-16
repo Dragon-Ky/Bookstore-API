@@ -28,27 +28,30 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     UserDetailsService userDetailsService;
     //OncePerRequestFilter: Đảm bảo Filter này chỉ chạy duy nhất 1 lần mỗi khi có request gửi đến
     @Override
-    protected void doFilterInternal( // Mọi Request (yêu cầu) từ trình duyệt/mobile gửi lên đều phải đi qua đây trước khi vào Controller
+    protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String username;
-        // kiểm tra có token ko
-        if (authHeader == null || !authHeader.startsWith("Bearer ")){
-            filterChain.doFilter(request,response);
+
+        // 1. Nếu không có Header hoặc không bắt đầu bằng Bearer -> Cho đi tiếp ngay
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
             return;
         }
-        //trích xuất token
-        jwt = authHeader.substring(7);
+
+        final String jwt = authHeader.substring(7);
+
         try {
-            username = jwtService.extractUsername(jwt);
-            //xác thực token
-            if (username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
+            // 2. Trích xuất username. Nếu Token hết hạn, dòng này sẽ ném Exception.
+            final String username = jwtService.extractUsername(jwt);
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                if(jwtService.isTokenValid(jwt)){
+
+                // 3. Kiểm tra tính hợp lệ của Token
+                if (jwtService.isTokenValid(jwt)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
@@ -58,9 +61,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-        } catch (Exception e){
-            log.error("Cannot set user authentication: {}", e.getMessage());
+        } catch (Exception e) {
+            // 4. CHỐT CHẶN QUAN TRỌNG:
+            // Khi lỗi (hết hạn, sai định dạng...), ta chỉ ghi log.
+            // Tuyệt đối KHÔNG ném Exception ra ngoài khối này.
+            log.error("JWT Security Error: {}", e.getMessage());
+
+            // Bạn có thể xóa SecurityContext để đảm bảo an toàn nếu cần
+            SecurityContextHolder.clearContext();
         }
-        filterChain.doFilter(request,response);
+
+        // 5. LUÔN LUÔN gọi doFilter ở cuối cùng để request không bị treo
+        filterChain.doFilter(request, response);
     }
 }
