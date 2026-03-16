@@ -6,6 +6,7 @@ import com.example.bookstore.DTO.Response.LoginResponse;
 import com.example.bookstore.DTO.Response.UserResponse;
 import com.example.bookstore.Entity.AppUser;
 import com.example.bookstore.Entity.ENUM.Role;
+import com.example.bookstore.Entity.ENUM.Type;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import com.example.bookstore.Mapper.UserMapper;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor // khai báo khỏi viết hàm khởi tạo
@@ -25,13 +27,16 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     UserMapper userMapper;
     JwtService jwtService;
+    OtpService otpService;
+    EmailService emailService;
     //hàm kiểu tra email tồn tại ko
     private void checkEmailExit(String email){
         if (userRepository.existsByEmail(email)) {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
     }
-    public UserResponse register(UserCreationRequest request){
+    @Transactional
+    public String register(UserCreationRequest request){
         //1. kiểm tra email đã tồn tại chưa
         checkEmailExit(request.getEmail());
         //2. Map dữ liệu từ Request sang Entity
@@ -39,12 +44,19 @@ public class UserService {
 
         //3.mã hóa mật khẩu
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        // chưa xác thực email
+        user.setActive(false);
 
         //4.mặc định khi đăng ký là là ROLE_USER
         user.setRole(Role.USER);
+        userRepository.save(user);
+        // tạo otp
+        String otp = otpService.createAndSaveOtp(user, Type.REGISTRATION);
+        // gửi gmail
+        emailService.sendVerificationEmail(user.getEmail(),otp,Type.REGISTRATION);
 
         //5.Lưu va trả về
-        return userMapper.toUserResponse(userRepository.save(user));
+        return "OTP_SENT";
     }
     public LoginResponse login(AuthenticationRequest request){
         //1. kiểm tra email

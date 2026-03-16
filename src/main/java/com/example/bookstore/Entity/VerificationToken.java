@@ -1,5 +1,6 @@
 package com.example.bookstore.Entity;
 
+import com.example.bookstore.Entity.ENUM.Type;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import jakarta.persistence.*;
@@ -14,13 +15,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "password_reset_token")
-public class PasswordResetToken {
+public class VerificationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @Column(nullable = false)
     String otp;
+
+    @Column
+    Type type;
 
     @OneToOne(targetEntity = AppUser.class ,fetch = FetchType.EAGER)
     @JoinColumn(nullable = false,name = "user_id")

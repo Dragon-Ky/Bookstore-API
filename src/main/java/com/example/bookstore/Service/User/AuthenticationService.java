@@ -6,7 +6,8 @@ import com.example.bookstore.DTO.Request.ResetPasswordRequest;
 import com.example.bookstore.DTO.Response.LoginResponse;
 import com.example.bookstore.Entity.AppUser;
 
-import com.example.bookstore.Entity.PasswordResetToken;
+import com.example.bookstore.Entity.ENUM.Type;
+import com.example.bookstore.Entity.VerificationToken;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 
@@ -50,17 +51,20 @@ public class AuthenticationService {
         //check email có tồn tại ko
         AppUser user = userRepository.findByEmailOrThrow(email);
         // tạo token ngẫu nhiên và lưu
-        String otp = otpService.createAndSaveOtp(user);
+        String otp = otpService.createAndSaveOtp(user,Type.PASSWORD_RESET);
         //gửi gmail
-        emailService.sendOtpEmail(user.getEmail(), otp);
+        emailService.sendVerificationEmail(user.getEmail(), otp,Type.PASSWORD_RESET);
         return "Mã OTP đã được gửi vào Email của bạn.";
     }
 
+    private VerificationToken getValidToken(String otp) {
+        return tokenRepository.findByOtp(otp)
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_OTP));
+    }
     @Transactional
     public void resetPassword(ResetPasswordRequest request){
         //tìm otp
-        PasswordResetToken resetToken = tokenRepository.findByOtp(request.getOtp())
-                .orElseThrow(()-> new AppException(ErrorCode.INVALID_OTP));
+        VerificationToken resetToken = getValidToken(request.getOtp());
         // để entity tự check
         resetToken.validate(request.getEmail());
         // đổi mật khẩu
@@ -69,5 +73,27 @@ public class AuthenticationService {
         userRepository.save(user);
         //xóa token
         tokenRepository.delete(resetToken);
+    }
+    @Transactional
+    public void verifyEmail(String email, String tokenValue) {
+        // 1. Tìm token dựa trên giá trị chuỗi (OTP/UUID)
+        VerificationToken token = tokenRepository.findByOtp(tokenValue)
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_OTP));
+
+        // 2. Sử dụng hàm validate có sẵn trong Entity VerificationToken để check email & expiry
+        token.validate(email);
+
+        // 3. Kiểm tra xem token này có đúng là loại REGISTRATION không
+        if (token.getType() != Type.REGISTRATION) {
+            throw new AppException(ErrorCode.INVALID_OTP);
+        }
+
+        // 4. Kích hoạt user
+        AppUser user = token.getUser();
+        user.setActive(true);
+        userRepository.save(user);
+
+        // 5. Xóa token sau khi dùng
+        tokenRepository.delete(token);
     }
 }

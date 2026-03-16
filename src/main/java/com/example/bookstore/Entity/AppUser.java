@@ -26,4 +26,7 @@ public class AppUser {
 
     @Enumerated(EnumType.STRING)
     Role role;
+
+    @Column(name = "is_active")
+    boolean isActive = false;
 }

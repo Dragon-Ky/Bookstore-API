@@ -6,6 +6,7 @@ import com.example.bookstore.DTO.Request.Creation.UserCreationRequest;
 import com.example.bookstore.DTO.Response.LoginResponse;
 import com.example.bookstore.DTO.Response.UserResponse;
 
+import com.example.bookstore.Service.User.AuthenticationService;
 import com.example.bookstore.Service.User.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -20,15 +21,25 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class UserController {
     UserService userService;
-
-    @PostMapping("/register")
-    public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request){
-        return ApiResponse.<UserResponse>builder()
+    AuthenticationService authenticationService;
+    // Kích hoạt tài khoản qua Link
+    @GetMapping("/verify")
+    public ApiResponse<String> verify(@RequestParam String token, @RequestParam String email) {
+        authenticationService.verifyEmail(email, token);
+        return ApiResponse.<String>builder()
                 .code(1000)
-                .message("Đăng ký tài khoản thành công!")
-                .result(userService.register(request))
+                .result("Kích hoạt tài khoản thành công!")
                 .build();
     }
+    @PostMapping("/register")
+    public ApiResponse<String> register(@RequestBody @Valid UserCreationRequest request) {
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .result(userService.register(request))
+                .message("Vui lòng kiểm tra email để kích hoạt tài khoản")
+                .build();
+    }
+
 
     @GetMapping("/{userId}")
     public ApiResponse<UserResponse> getUser(@PathVariable Long userId) {

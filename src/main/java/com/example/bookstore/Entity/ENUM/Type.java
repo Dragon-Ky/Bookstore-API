@@ -1,4 +1,5 @@
 package com.example.bookstore.Entity.ENUM;
 
-public enum type {
+public enum Type {
+    REGISTRATION,PASSWORD_RESET
 }
