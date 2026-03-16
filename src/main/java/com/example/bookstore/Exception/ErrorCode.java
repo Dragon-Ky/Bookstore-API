@@ -31,6 +31,7 @@ public enum ErrorCode {
     INVALID_OTP(2013,"Mã OTP ko hợp lệ" ,HttpStatus.BAD_REQUEST ),
     OTP_EXPIRED(2014,"Mã OTP đã hết hạn ",HttpStatus.BAD_REQUEST ),
     QUICK_RETRY(2015,"Mã đã tạo vui lòng đợi 60s",HttpStatus.CONFLICT),
+    OTP_NOT_FOUND(2016,"Không thể gửi email OTP",HttpStatus.BAD_REQUEST),
 
     // --- 3xxx: Lỗi liên quan đến Book ---
     BOOK_NOT_EXISTED(3001, "Cuốn sách này không tồn tại trong thư viện", HttpStatus.NOT_FOUND),

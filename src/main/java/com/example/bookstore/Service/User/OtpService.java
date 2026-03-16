@@ -16,23 +16,22 @@ import java.util.Random;
 public class OtpService {
     private final PasswordResetTokenRepository tokenRepository;
     public String createAndSaveOtp(AppUser user) {
-        // 1. Lấy token cũ của User từ DB
-        // Nếu có id -> Hibernate sẽ UPDATE. Nếu null -> Hibernate sẽ INSERT.
-        VerificationToken token = tokenRepository.findByUserId(user.getId())
-                .orElseGet(() -> new VerificationToken(user));
 
-        // 2. Kiểm tra chống spam (Phải check trên trường createdAt mới thêm)
-        validateRateLimit(token);
+        VerificationToken token = tokenRepository.findByUserId(user.getId()).orElse(null);
 
-        // 3. Cập nhật thông tin mới
+        if (token != null) {
+            validateRateLimit(token);
+            tokenRepository.delete(token);
+        }
+
         String otp = generateOtp();
-        token.setOtp(otp);
 
-        token.setExpiryDate(LocalDateTime.now().plusMinutes(5));
-        token.setCreatedAt(LocalDateTime.now()); // Reset mốc 60s mỗi lần gửi thành công
+        VerificationToken newToken = new VerificationToken(user);
+        newToken.setOtp(otp);
+        newToken.setCreatedAt(LocalDateTime.now());
+        newToken.setExpiryDate(LocalDateTime.now().plusMinutes(5));
 
-        // 4. Lưu xuống DB
-        tokenRepository.save(token);
+        tokenRepository.save(newToken);
 
         return otp;
     }

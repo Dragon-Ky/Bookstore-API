@@ -33,8 +33,8 @@ public class EmailService {
 
             helper.setText(htmlContent, true);
             mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Lỗi gửi mail");
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi gửi mail: " + e.getMessage());
         }
     }
     }

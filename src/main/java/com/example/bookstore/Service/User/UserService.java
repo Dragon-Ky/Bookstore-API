@@ -67,7 +67,11 @@ public class UserService {
         // tạo otp
         String otp = otpService.createAndSaveOtp(user);
         // gửi gmail
-        emailService.sendVerificationEmail(user.getEmail(),otp);
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), otp);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.OTP_NOT_FOUND);
+        }
 
         //5.Lưu va trả về
         return "OTP_SENT";
