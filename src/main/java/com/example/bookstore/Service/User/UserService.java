@@ -45,7 +45,7 @@ public class UserService {
         //3.mã hóa mật khẩu
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         // chưa xác thực email
-        user.setActive(false);
+        user.setIsActive(false);
 
         //4.mặc định khi đăng ký là là ROLE_USER
         user.setRole(Role.USER);

@@ -90,7 +90,7 @@ public class AuthenticationService {
 
         // 4. Kích hoạt user
         AppUser user = token.getUser();
-        user.setActive(true);
+        user.setIsActive(true);
         userRepository.save(user);
 
         // 5. Xóa token sau khi dùng

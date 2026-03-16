@@ -28,5 +28,10 @@ public class AppUser {
     Role role;
 
     @Column(name = "is_active")
-    boolean isActive = false;
+    Boolean isActive = false;
+
+    public boolean getIsActive() {
+        return isActive != null && isActive;
+        // Nếu isActive là null hoặc false thì đều trả về false
+    }
 }
