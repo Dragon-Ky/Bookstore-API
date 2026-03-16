@@ -12,4 +12,6 @@ public interface PasswordResetTokenRepository extends JpaRepository<Verification
     Optional<VerificationToken> findByUser(AppUser user);
 
     void deleteByUser(AppUser user);
+
+    Optional<VerificationToken> findByUserId(Long id);
 }
