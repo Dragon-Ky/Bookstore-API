@@ -25,12 +25,13 @@ public class UserController {
     AuthenticationService authenticationService;
 
     // Kích hoạt tài khoản qua Link
-    @GetMapping("/verify")
-    public ApiResponse<String> verify(@RequestParam String token, @RequestParam String email) {
-        authenticationService.verifyEmail(email, token);
+    @PostMapping("/verify-otp")
+    public ApiResponse<String> verifyOtp(@RequestParam String email, @RequestParam String otp) {
+
         return ApiResponse.<String>builder()
                 .code(1000)
-                .result("Kích hoạt tài khoản thành công!")
+                .result(authenticationService.verifyEmail(email, otp))
+                .message("Xác thực thành công")
                 .build();
     }
     @PostMapping("/register")
@@ -65,10 +66,11 @@ public class UserController {
 
     @PostMapping("/forgot-password")
     public ApiResponse<String> forgotPassword(@RequestParam String email) {
-        // Gọi hàm này để tạo OTP và lưu vào DB
-        String result = authenticationService.forgotPassword(email);
+
         return ApiResponse.<String>builder()
-                .result(result)
+                .code(1000)
+                .result(authenticationService.forgotPassword(email))
+                .message("Thực hiện thay đổi mật khẩu")
                 .build();
     }
     @PostMapping("/reset-password")

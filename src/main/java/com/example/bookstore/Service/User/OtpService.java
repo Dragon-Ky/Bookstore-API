@@ -16,30 +16,16 @@ import java.util.UUID;
 public class OtpService {
     private final PasswordResetTokenRepository tokenRepository;
     public String createAndSaveOtp(AppUser user, Type type) {
-        String token;
-        LocalDateTime expiry;
+        // Tạo mã 6 số ngẫu nhiên từ 100000 đến 999999
+        String otp = String.valueOf(new Random().nextInt(900000) + 100000);
 
-        // Nếu là đăng ký: tạo chuỗi UUID dài (an toàn cho Link), hết hạn sau 24h
-        if (type == Type.REGISTRATION) {
-            token = UUID.randomUUID().toString();
-            expiry = LocalDateTime.now().plusMinutes(5);
-        }
-        // Nếu là reset mật khẩu: tạo 6 số ngẫu nhiên, hết hạn sau 5 phút
-        else {
-            token = String.valueOf(new Random().nextInt(900000) + 100000);
-            expiry = LocalDateTime.now().plusMinutes(5);
-        }
+        VerificationToken token = new VerificationToken();
+        token.setOtp(otp);
+        token.setUser(user);
+        token.setType(type);
+        token.setExpiryDate(LocalDateTime.now().plusMinutes(5)); // Hết hạn sau 5 phút
 
-        // Xóa token cũ của user nếu có trước khi tạo mới (để tránh rác DB)
-        tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
-
-        VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setOtp(token); // Trong DB field vẫn là otp nhưng ta lưu cả token vào đây
-        verificationToken.setUser(user);
-        verificationToken.setType(type);
-        verificationToken.setExpiryDate(expiry);
-
-        tokenRepository.save(verificationToken);
-        return token;
+        tokenRepository.save(token);
+        return otp;
     }
 }

@@ -16,34 +16,27 @@ import org.springframework.stereotype.Service;
 public class EmailService {
     private final JavaMailSender mailSender;
 
-    public void sendVerificationEmail(String toEmail, String token, Type type) {
+    public void sendVerificationEmail(String toEmail, String otp, Type type) {
         MimeMessage message = mailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(toEmail);
 
-            if (type == Type.REGISTRATION) {
-                helper.setSubject("Kích hoạt tài khoản Bookstore");
-                String url = "http://localhost:8080/api/v1/users/verify?token=" + token + "&email=" + toEmail;
+            String title = (type == Type.REGISTRATION) ? "MÃ XÁC THỰC ĐĂNG KÝ" : "MÃ ĐẶT LẠI MẬT KHẨU";
+            helper.setSubject("[Bookstore] " + title);
 
-                // Đây là đoạn mã tạo Nút bấm bằng HTML
-                String htmlContent = "<h1>Chào mừng bạn!</h1>" +
-                        "<p>Vui lòng nhấn vào nút bên dưới để kích hoạt tài khoản:</p>" +
-                        "<a href='" + url + "' style='background-color: #4CAF50; color: white; padding: 14px 25px; " +
-                        "text-align: center; text-decoration: none; display: inline-block; border-radius: 8px; font-weight: bold;'>" +
-                        "KÍCH HOẠT TÀI KHOẢN</a>" +
-                        "<p>Nếu nút không hoạt động, vui lòng bỏ qua email này.</p>";
+            String htmlContent = "<div style='font-family: Arial; text-align: center; border: 1px solid #ddd; padding: 20px;'>" +
+                    "<h3>" + title + "</h3>" +
+                    "<p>Vui lòng nhập mã dưới đây vào ứng dụng của bạn:</p>" +
+                    "<div style='background: #eee; padding: 20px; font-size: 30px; font-weight: bold; letter-spacing: 5px;'>" +
+                    otp + "</div>" +
+                    "<p>Mã có hiệu lực trong 5 phút.</p>" +
+                    "</div>";
 
-                helper.setText(htmlContent, true); // 'true' để Java hiểu đây là HTML
-            } else {
-                // Logic cho OTP 6 số giữ nguyên vì reset mật khẩu cần nhập số vào App
-                helper.setSubject("Mã đặt lại mật khẩu");
-                helper.setText("Mã OTP của bạn là: " + token, false);
-            }
+            helper.setText(htmlContent, true);
             mailSender.send(message);
         } catch (MessagingException e) {
             throw new RuntimeException("Lỗi gửi mail");
         }
     }
-
-}
+    }

@@ -51,9 +51,9 @@ public class AuthenticationService {
         //check email có tồn tại ko
         AppUser user = userRepository.findByEmailOrThrow(email);
         // tạo token ngẫu nhiên và lưu
-        String otp = otpService.createAndSaveOtp(user,Type.PASSWORD_RESET);
+        String otp = otpService.createAndSaveOtp(user, Type.PASSWORD_RESET);
         //gửi gmail
-        emailService.sendVerificationEmail(user.getEmail(), otp,Type.PASSWORD_RESET);
+        emailService.sendVerificationEmail(user.getEmail(), otp, Type.PASSWORD_RESET);
         return "Mã OTP đã được gửi vào Email của bạn.";
     }
 
@@ -61,8 +61,9 @@ public class AuthenticationService {
         return tokenRepository.findByOtp(otp)
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_OTP));
     }
+
     @Transactional
-    public void resetPassword(ResetPasswordRequest request){
+    public void resetPassword(ResetPasswordRequest request) {
         //tìm otp
         VerificationToken resetToken = getValidToken(request.getOtp());
         // để entity tự check
@@ -74,26 +75,25 @@ public class AuthenticationService {
         //xóa token
         tokenRepository.delete(resetToken);
     }
+
     @Transactional
-    public void verifyEmail(String email, String tokenValue) {
-        // 1. Tìm token dựa trên giá trị chuỗi (OTP/UUID)
-        VerificationToken token = tokenRepository.findByOtp(tokenValue)
+    public String verifyEmail(String email, String otp) {
+        // 1. Tìm mã trong DB
+        VerificationToken token = tokenRepository.findByOtp(otp)
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_OTP));
 
-        // 2. Sử dụng hàm validate có sẵn trong Entity VerificationToken để check email & expiry
+        // 2. Kiểm tra email và hết hạn (Dùng hàm validate  trong Entity)
         token.validate(email);
 
-        // 3. Kiểm tra xem token này có đúng là loại REGISTRATION không
-        if (token.getType() != Type.REGISTRATION) {
-            throw new AppException(ErrorCode.INVALID_OTP);
+        // 3. Nếu là đăng ký thì set active = true
+        if (token.getType() == Type.REGISTRATION) {
+            AppUser user = token.getUser();
+            user.setIsActive(true);
+            userRepository.save(user);
         }
 
-        // 4. Kích hoạt user
-        AppUser user = token.getUser();
-        user.setIsActive(true);
-        userRepository.save(user);
-
-        // 5. Xóa token sau khi dùng
+        // 4. Xóa mã sau khi dùng
         tokenRepository.delete(token);
+        return "đã check";
     }
 }
