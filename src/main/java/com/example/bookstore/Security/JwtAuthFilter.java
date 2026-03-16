@@ -20,22 +20,32 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor //tạo constructor
-@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
+
     JwtService jwtService;
     UserDetailsService userDetailsService;
-    //OncePerRequestFilter: Đảm bảo Filter này chỉ chạy duy nhất 1 lần mỗi khi có request gửi đến
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
+        String path = request.getServletPath();
+
+        // 1 Bỏ qua các endpoint public
+        if (path.startsWith("/users/login") || path.startsWith("/users/register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
 
-        // 1. Nếu không có Header hoặc không bắt đầu bằng Bearer -> Cho đi tiếp ngay
+        // 2 Nếu không có token -> cho đi tiếp
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -44,34 +54,35 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String jwt = authHeader.substring(7);
 
         try {
-            // 2. Trích xuất username. Nếu Token hết hạn, dòng này sẽ ném Exception.
-            final String username = jwtService.extractUsername(jwt);
+            String username = jwtService.extractUsername(jwt);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-                // 3. Kiểm tra tính hợp lệ của Token
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
                 if (jwtService.isTokenValid(jwt)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
+
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
                     );
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-        } catch (Exception e) {
-            // 4. CHỐT CHẶN QUAN TRỌNG:
-            // Khi lỗi (hết hạn, sai định dạng...), ta chỉ ghi log.
-            // Tuyệt đối KHÔNG ném Exception ra ngoài khối này.
-            log.error("JWT Security Error: {}", e.getMessage());
 
-            // Bạn có thể xóa SecurityContext để đảm bảo an toàn nếu cần
+        } catch (Exception e) {
+
+            log.warn("JWT Error: {}", e.getMessage());
             SecurityContextHolder.clearContext();
         }
 
-        // 5. LUÔN LUÔN gọi doFilter ở cuối cùng để request không bị treo
         filterChain.doFilter(request, response);
     }
 }
