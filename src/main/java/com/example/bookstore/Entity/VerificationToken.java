@@ -6,6 +6,7 @@ import com.example.bookstore.Exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +31,8 @@ public class VerificationToken {
     @JoinColumn(nullable = false,name = "user_id")
     AppUser user;
 
-    @Column(nullable = false)
+    @CreatedDate
+    @Column(updatable = true)
     LocalDateTime expiryDate;
 
     // Hàm kiểm tra token hết hạn chưa
@@ -45,5 +47,8 @@ public class VerificationToken {
         if (this.isExpired()) {
             throw new AppException(ErrorCode.OTP_EXPIRED);
         }
+    }
+    public VerificationToken(AppUser user) {
+        this.user = user;
     }
 }

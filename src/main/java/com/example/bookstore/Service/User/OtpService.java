@@ -17,31 +17,47 @@ import java.util.UUID;
 public class OtpService {
     private final PasswordResetTokenRepository tokenRepository;
     public String createAndSaveOtp(AppUser user, Type type) {
-        // 1. Tìm xem User này đã từng có token/otp nào trong DB chưa
-        Optional<VerificationToken> existingToken = tokenRepository.findByUserId(user.getId());
+        // 1. Lấy token cũ (nếu có)
+        VerificationToken token = tokenRepository.findByUserId(user.getId())
+                .orElse(new VerificationToken(user));
 
-        // 2. Tạo mã OTP mới (6 số)
-        String otp = String.valueOf(new Random().nextInt(900000) + 100000);
+        // 2. Kiểm tra chống spam
+        validateRateLimit(token);
 
-        VerificationToken token;
+        // 3. Tạo và cập nhật thông tin OTP
+        String otp = generateNumericOtp();
+        updateTokenDetails(token, otp, type);
 
-        if (existingToken.isPresent()) {
-            // 3. NẾU ĐÃ CÓ: Lấy đối tượng cũ ra để ghi đè thông tin mới vào (Hibernate sẽ hiểu đây là UPDATE)
-            token = existingToken.get();
-        } else {
-            // 4. NẾU CHƯA CÓ: Tạo đối tượng mới hoàn toàn (Hibernate sẽ hiểu đây là INSERT)
-            token = new VerificationToken();
-            token.setUser(user); // Chỉ cần set User một lần duy nhất khi tạo mới
+        // 4. Lưu và trả về
+        tokenRepository.save(token);
+        return otp;
+    }
+    private void validateRateLimit(VerificationToken token) {
+        if (token.getId() == null) return; // Token mới tinh, không cần check spam
+
+        LocalDateTime lastSentTime = token.getExpiryDate().minusMinutes(5);
+        LocalDateTime nextAllowedTime = lastSentTime.plusSeconds(60);
+
+        if (nextAllowedTime.isAfter(LocalDateTime.now())) {
+            long secondsToWait = java.time.Duration.between(LocalDateTime.now(), nextAllowedTime).getSeconds();
+            throw new RuntimeException("Vui lòng đợi " + secondsToWait + " giây.");
         }
+    }
 
-        // 5. Cập nhật các thông tin mới (áp dụng cho cả trường hợp tạo mới hoặc ghi đè)
+    /**
+     * Tạo mã số ngẫu nhiên 6 chữ số.
+     * Tách riêng để sau này có thể đổi sang mã phức tạp hơn mà không sửa logic chính.
+     */
+    private String generateNumericOtp() {
+        return String.valueOf(new Random().nextInt(900000) + 100000);
+    }
+
+    /**
+     *  Cập nhật các trạng thái mới cho Entity.
+     */
+    private void updateTokenDetails(VerificationToken token, String otp, Type type) {
         token.setOtp(otp);
         token.setType(type);
         token.setExpiryDate(LocalDateTime.now().plusMinutes(5));
-
-        // 6. Lưu xuống DB (Nếu là token lấy từ DB lên, nó sẽ thực hiện lệnh SQL UPDATE thay vì INSERT)
-        tokenRepository.save(token);
-
-        return otp;
     }
 }
