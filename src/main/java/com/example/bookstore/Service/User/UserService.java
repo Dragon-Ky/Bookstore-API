@@ -6,7 +6,6 @@ import com.example.bookstore.DTO.Response.LoginResponse;
 import com.example.bookstore.DTO.Response.UserResponse;
 import com.example.bookstore.Entity.AppUser;
 import com.example.bookstore.Entity.ENUM.Role;
-import com.example.bookstore.Entity.ENUM.Type;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import com.example.bookstore.Mapper.UserMapper;
@@ -62,9 +61,9 @@ public class UserService {
         user.setRole(Role.USER);
         userRepository.save(user);
         // tạo otp
-        String otp = otpService.createAndSaveOtp(user, Type.REGISTRATION);
+        String otp = otpService.createAndSaveOtp(user);
         // gửi gmail
-        emailService.sendVerificationEmail(user.getEmail(),otp,Type.REGISTRATION);
+        emailService.sendVerificationEmail(user.getEmail(),otp);
 
         //5.Lưu va trả về
         return "OTP_SENT";

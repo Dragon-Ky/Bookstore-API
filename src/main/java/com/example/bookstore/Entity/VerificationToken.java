@@ -1,12 +1,10 @@
 package com.example.bookstore.Entity;
 
-import com.example.bookstore.Entity.ENUM.Type;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -24,16 +22,20 @@ public class VerificationToken {
     @Column(nullable = false)
     String otp;
 
-    @Column
-    Type type;
-
-    @OneToOne(targetEntity = AppUser.class ,fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false,name = "user_id")
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "user_id")
     AppUser user;
 
-    @CreatedDate
-    @Column(updatable = true)
+    @Column(nullable = false)
     LocalDateTime expiryDate;
+
+    @Column(name = "created_at")
+    LocalDateTime createdAt; // Trường này dùng để check 60s
+
+    // Thêm Constructor này
+    public VerificationToken(AppUser user) {
+        this.user = user;
+    }
 
     // Hàm kiểm tra token hết hạn chưa
     public boolean isExpired() {
@@ -47,8 +49,5 @@ public class VerificationToken {
         if (this.isExpired()) {
             throw new AppException(ErrorCode.OTP_EXPIRED);
         }
-    }
-    public VerificationToken(AppUser user) {
-        this.user = user;
     }
 }

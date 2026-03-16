@@ -88,4 +88,14 @@ public class UserController {
         userService.deleteUserFalse();
         return "Đã dọn dẹp sạch tài khoản ảo!";
     }
+    @PostMapping("/resend-verification")
+    public ApiResponse<String> resendVerification(@RequestParam String email) {
+
+        authenticationService.resendVerification(email);
+
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .result("Mã xác thực mới đã được gửi đến email của bạn.")
+                .build();
+    }
 }

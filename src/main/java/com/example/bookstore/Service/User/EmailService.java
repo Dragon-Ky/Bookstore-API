@@ -1,11 +1,9 @@
 package com.example.bookstore.Service.User;
 
 
-import com.example.bookstore.Entity.ENUM.Type;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -16,13 +14,13 @@ import org.springframework.stereotype.Service;
 public class EmailService {
     private final JavaMailSender mailSender;
 
-    public void sendVerificationEmail(String toEmail, String otp, Type type) {
+    public void sendVerificationEmail(String toEmail, String otp) {
         MimeMessage message = mailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(toEmail);
 
-            String title = (type == Type.REGISTRATION) ? "MÃ XÁC THỰC ĐĂNG KÝ" : "MÃ ĐẶT LẠI MẬT KHẨU";
+            String title = "MÃ XÁC THỰC ";
             helper.setSubject("[Bookstore] " + title);
 
             String htmlContent = "<div style='font-family: Arial; text-align: center; border: 1px solid #ddd; padding: 20px;'>" +

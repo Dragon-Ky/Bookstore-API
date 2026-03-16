@@ -30,6 +30,7 @@ public enum ErrorCode {
     NOT_LOGIN(2012,"Người dùng chưa đăng nhập hoặc phiên làm việc đã hết hạn",HttpStatus.NOT_FOUND),
     INVALID_OTP(2013,"Mã OTP ko hợp lệ" ,HttpStatus.BAD_REQUEST ),
     OTP_EXPIRED(2014,"Mã OTP đã hết hạn ",HttpStatus.BAD_REQUEST ),
+    QUICK_RETRY(2015,"Mã đã tạo vui lòng đợi 60s",HttpStatus.CONFLICT),
 
     // --- 3xxx: Lỗi liên quan đến Book ---
     BOOK_NOT_EXISTED(3001, "Cuốn sách này không tồn tại trong thư viện", HttpStatus.NOT_FOUND),
@@ -48,7 +49,8 @@ public enum ErrorCode {
 
     RECORDID_NOT_FOUND(4001,"Id giao dịch ko tồn tại" ,HttpStatus.NOT_FOUND ),
     BOOK_ALREADY_RETURNED(4002,"Sách đã được trả về thư viện" ,HttpStatus.CONFLICT ),
-    INVALID_STATUS_CHANGE(4003,"Task đã được chỉnh sữa" ,HttpStatus.CONFLICT );
+    INVALID_STATUS_CHANGE(4003,"Task đã được chỉnh sữa" ,HttpStatus.CONFLICT ),
+    DATABASE_ERROR(4003,"Lỗi Data" ,HttpStatus.BAD_REQUEST );
 
 
     int code;

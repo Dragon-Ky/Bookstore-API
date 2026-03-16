@@ -1,12 +1,8 @@
 package com.example.bookstore.Service.User;
 
-import com.example.bookstore.DTO.Request.AuthenticationRequest;
-
 import com.example.bookstore.DTO.Request.ResetPasswordRequest;
-import com.example.bookstore.DTO.Response.LoginResponse;
 import com.example.bookstore.Entity.AppUser;
 
-import com.example.bookstore.Entity.ENUM.Type;
 import com.example.bookstore.Entity.VerificationToken;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
@@ -34,26 +30,26 @@ public class AuthenticationService {
     OtpService otpService;
     PasswordResetTokenRepository tokenRepository;
 
-    public LoginResponse authenticate(AuthenticationRequest request) {
-        //1. check email có tồn tại ko
-        var user = userRepository.findByEmailOrThrow(request.getEmail());
-        //2.Kiểm tra mật khẩu (Sử dụng matches để so sánh pass đã mã hóa)
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        if (!authenticated) {
-            throw new AppException(ErrorCode.WRONG_PASSWORD);
-        }
-        String token = jwtService.generateToken(user);
-        //3. nếu đúng thì trả token
-        return LoginResponse.of(token, user.getRole().name());
+    public void resendVerification(String email) {
+        // 1. Tìm User đã tồn tại trong DB
+        AppUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        // 2. Gọi hàm logic tạo và lưu OTP đã tách sạch ở các bước trước
+        // Hàm này sẽ tự check 60s và tự động "đè" (Update) OTP cũ
+        String newOtp = otpService.createAndSaveOtp(user);
+
+        // 3. Gửi email
+        emailService.sendVerificationEmail(user.getEmail(), newOtp);
     }
 
     public String forgotPassword(String email) {
         //check email có tồn tại ko
         AppUser user = userRepository.findByEmailOrThrow(email);
         // tạo token ngẫu nhiên và lưu
-        String otp = otpService.createAndSaveOtp(user, Type.PASSWORD_RESET);
+        String otp = otpService.createAndSaveOtp(user);
         //gửi gmail
-        emailService.sendVerificationEmail(user.getEmail(), otp, Type.PASSWORD_RESET);
+        emailService.sendVerificationEmail(user.getEmail(), otp);
         return "Mã OTP đã được gửi vào Email của bạn.";
     }
 
@@ -86,11 +82,10 @@ public class AuthenticationService {
         token.validate(email);
 
         // 3. Nếu là đăng ký thì set active = true
-        if (token.getType() == Type.REGISTRATION) {
-            AppUser user = token.getUser();
-            user.setIsActive(true);
-            userRepository.save(user);
-        }
+
+        AppUser user = token.getUser();
+        user.setIsActive(true);
+        userRepository.save(user);
 
         // 4. Xóa mã sau khi dùng
         tokenRepository.delete(token);
