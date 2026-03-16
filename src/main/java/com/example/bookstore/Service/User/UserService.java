@@ -10,6 +10,7 @@ import com.example.bookstore.Entity.ENUM.Type;
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
 import com.example.bookstore.Mapper.UserMapper;
+import com.example.bookstore.Repository.PasswordResetTokenRepository;
 import com.example.bookstore.Repository.UserRepository;
 import com.example.bookstore.Security.JwtService;
 import lombok.AccessLevel;
@@ -18,6 +19,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor // khai báo khỏi viết hàm khởi tạo
@@ -29,10 +32,18 @@ public class UserService {
     JwtService jwtService;
     OtpService otpService;
     EmailService emailService;
+    PasswordResetTokenRepository tokenRepository;
     //hàm kiểu tra email tồn tại ko
-    private void checkEmailExit(String email){
-        if (userRepository.existsByEmail(email)) {
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
+    private void checkEmailExit(String email) {
+        Optional<AppUser> existingUser = userRepository.findByEmail(email);
+        if (existingUser.isPresent()) {
+            if (Boolean.FALSE.equals(existingUser.get().getIsActive())) {
+                //Nếu tài khoản tồn tại nhưng đang là FALSE -> Xóa luôn để cho đăng ký mới
+                tokenRepository.deleteByUser(existingUser.get());
+                userRepository.delete(existingUser.get());
+            } else {
+                throw new AppException(ErrorCode.EMAIL_EXISTED);
+            }
         }
     }
     @Transactional
@@ -75,5 +86,8 @@ public class UserService {
         AppUser user = userRepository.findById(userId)
                 .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
+    }
+    public UserResponse deleteUserFalse(){
+        return userRepository.deleteAllByIsActiveFalse();
     }
 }

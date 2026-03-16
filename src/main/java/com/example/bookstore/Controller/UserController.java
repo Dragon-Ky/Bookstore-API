@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     UserService userService;
     AuthenticationService authenticationService;
+
     // Kích hoạt tài khoản qua Link
     @GetMapping("/verify")
     public ApiResponse<String> verify(@RequestParam String token, @RequestParam String email) {
@@ -79,5 +80,10 @@ public class UserController {
                 .code(1000)
                 .result("Mật khẩu đã được thay đổi thành công!")
                 .build();
+    }
+    @DeleteMapping("/cleanup")
+    public String cleanup() {
+        userService.deleteUserFalse();
+        return "Đã dọn dẹp sạch tài khoản ảo!";
     }
 }
