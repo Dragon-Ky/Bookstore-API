@@ -30,6 +30,7 @@ public class DataInitializer {
 
             admin.setRole(Role.ADMIN);
 
+            admin.setIsActive(true);
             userRepository.save(admin);
         }
     }
