@@ -3,6 +3,7 @@ package com.example.bookstore.Controller;
 import com.example.bookstore.DTO.ApiResponse;
 import com.example.bookstore.DTO.Request.AuthenticationRequest;
 import com.example.bookstore.DTO.Request.Creation.UserCreationRequest;
+import com.example.bookstore.DTO.Request.ResetPasswordRequest;
 import com.example.bookstore.DTO.Response.LoginResponse;
 import com.example.bookstore.DTO.Response.UserResponse;
 
@@ -39,7 +40,7 @@ public class UserController {
                 .message("Vui lòng kiểm tra email để kích hoạt tài khoản")
                 .build();
     }
-
+    
 
     @GetMapping("/{userId}")
     public ApiResponse<UserResponse> getUser(@PathVariable Long userId) {
@@ -57,6 +58,26 @@ public class UserController {
                 .code(1000)
                 .result(result)
                 .message("Chào mừng bạn quay trở lại!")
+                .build();
+    }
+
+
+    @PostMapping("/forgot-password")
+    public ApiResponse<String> forgotPassword(@RequestParam String email) {
+        // Gọi hàm này để tạo OTP và lưu vào DB
+        String result = authenticationService.forgotPassword(email);
+        return ApiResponse.<String>builder()
+                .result(result)
+                .build();
+    }
+    @PostMapping("/reset-password")
+    public ApiResponse<String> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        // Gọi Service xử lý kiểm tra OTP và đổi mật khẩu
+        authenticationService.resetPassword(request);
+
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .result("Mật khẩu đã được thay đổi thành công!")
                 .build();
     }
 }
