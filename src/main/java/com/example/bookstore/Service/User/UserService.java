@@ -34,16 +34,20 @@ public class UserService {
     PasswordResetTokenRepository tokenRepository;
     //hàm kiểu tra email tồn tại ko
     private void checkEmailExit(String email) {
-        Optional<AppUser> existingUser = userRepository.findByEmail(email);
-        if (existingUser.isPresent()) {
-            if (Boolean.FALSE.equals(existingUser.get().getIsActive())) {
-                //Nếu tài khoản tồn tại nhưng đang là FALSE -> Xóa luôn để cho đăng ký mới
-                tokenRepository.deleteByUser(existingUser.get());
-                userRepository.delete(existingUser.get());
-            } else {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            if (Boolean.TRUE.equals(user.getIsActive())) {
+                // Nếu đã active thì tuyệt đối không cho đăng ký trùng
                 throw new AppException(ErrorCode.EMAIL_EXISTED);
+            } else {
+                // Nếu chưa active:
+                // 1. Xóa các token liên quan trước để không bị lỗi khóa ngoại
+                tokenRepository.deleteByUser(user);
+                // 2. Xóa user cũ
+                userRepository.delete(user);
+                // 3. Flush để DB sạch bóng email này trước khi lưu mới
+                userRepository.flush();
             }
-        }
+        });
     }
     @Transactional
     public String register(UserCreationRequest request){
