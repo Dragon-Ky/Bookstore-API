@@ -33,7 +33,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable());
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/register", "/users/login").permitAll() // Ai cũng vào được trang login/register
+                .requestMatchers("/users/login", "/users/register", "/users/verify-otp").permitAll() // Ai cũng vào được trang login/register
 
                 // Chỉ Admin mới được thêm/xóa/sửa sách
                 .requestMatchers("/admin/**").hasRole("ADMIN")

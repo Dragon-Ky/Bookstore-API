@@ -79,6 +79,10 @@ public class UserService {
     public LoginResponse login(AuthenticationRequest request){
         //1. kiểm tra email
         AppUser user = userRepository.findByEmailOrThrow(request.getEmail());
+        // kiểm tra active
+        if (Boolean.FALSE.equals(user.getIsActive())) {
+            throw new AppException(ErrorCode.USER_NOT_ACTIVE);
+        }
         //2. kiểm tra mật khẩu
         boolean authenticated = passwordEncoder.matches(request.getPassword(),user.getPassword());
         if (!authenticated){
