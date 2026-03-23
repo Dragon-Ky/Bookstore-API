@@ -51,32 +51,34 @@ public class UserService {
     }
     @Transactional
     public String register(UserCreationRequest request){
-        //1. kiểm tra email đã tồn tại chưa
+        // 1. kiểm tra email đã tồn tại chưa
         checkEmailExit(request.getEmail());
-        //2. Map dữ liệu từ Request sang Entity
+
+        // 2. Map dữ liệu từ Request sang Entity
         AppUser user = userMapper.toAppUser(request);
 
-        //3.mã hóa mật khẩu
+        // 3. mã hóa mật khẩu
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        // chưa xác thực email
-        user.setIsActive(false);
 
-        //4.mặc định khi đăng ký là là ROLE_USER
-        user.setRole(Role.USER);
+        // [QUAN TRỌNG NHẤT]: Mở khóa tài khoản ngay lập tức để Login được luôn
         user.setIsActive(true);
-        userRepository.save(user);
-        // tạo otp
-//        String otp = otpService.createAndSaveOtp(user);
-//        // gửi gmail
-//        try {
-//            emailService.sendVerificationEmail(user.getEmail(), otp);
-//        } catch (Exception e) {
-//            throw new AppException(ErrorCode.OTP_NOT_FOUND);
-//        }
 
-        //5.Lưu va trả về
-        return "OTP_SENT";
+        // 4. mặc định khi đăng ký là ROLE_USER
+        user.setRole(Role.USER);
+        userRepository.save(user);
+
+        // Ẩn đoạn Gửi OTP vì Frontend đã làm Ảo rồi
+        // String otp = otpService.createAndSaveOtp(user);
+        // try {
+        //     emailService.sendVerificationEmail(user.getEmail(), otp);
+        // } catch (Exception e) {
+        //     throw new AppException(ErrorCode.OTP_NOT_FOUND);
+        // }
+
+        // 5. Trả về thành công
+        return "REGISTER_SUCCESS";
     }
+
     public LoginResponse login(AuthenticationRequest request){
         //1. kiểm tra email
         AppUser user = userRepository.findByEmailOrThrow(request.getEmail());
