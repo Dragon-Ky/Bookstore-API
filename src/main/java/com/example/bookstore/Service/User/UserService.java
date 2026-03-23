@@ -63,15 +63,16 @@ public class UserService {
 
         //4.mặc định khi đăng ký là là ROLE_USER
         user.setRole(Role.USER);
+        user.setIsActive(true);
         userRepository.save(user);
         // tạo otp
-        String otp = otpService.createAndSaveOtp(user);
-        // gửi gmail
-        try {
-            emailService.sendVerificationEmail(user.getEmail(), otp);
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.OTP_NOT_FOUND);
-        }
+//        String otp = otpService.createAndSaveOtp(user);
+//        // gửi gmail
+//        try {
+//            emailService.sendVerificationEmail(user.getEmail(), otp);
+//        } catch (Exception e) {
+//            throw new AppException(ErrorCode.OTP_NOT_FOUND);
+//        }
 
         //5.Lưu va trả về
         return "OTP_SENT";
