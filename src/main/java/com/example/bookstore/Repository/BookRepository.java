@@ -26,4 +26,10 @@ public interface BookRepository extends JpaRepository<Book,Long>{
     List<Book> searchByKeyword(@Param("keyword") String keyword);
 
     List<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String title, String author);
+
+    @Query("SELECT b FROM Book b WHERE " +
+            "(:title IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
+            "(:author IS NULL OR LOWER(b.author) LIKE LOWER(CONCAT('%', :author, '%')))")
+    List<Book> searchDynamicByAi(@Param("title") String title,@Param("author") String author);
+
 }
