@@ -24,8 +24,12 @@ public class Book {
     @Column(name = "image", columnDefinition = "TEXT") //post
     String image;
 
+    @Column(columnDefinition = "TEXT")
     String title;
+
+    @Column(columnDefinition = "TEXT")
     String author;
+
     String category;
     @Column(columnDefinition = "TEXT")
     String description;

@@ -4,6 +4,7 @@ import com.example.bookstore.Entity.Book;
 
 import com.example.bookstore.Exception.AppException;
 import com.example.bookstore.Exception.ErrorCode;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
@@ -27,9 +28,21 @@ public interface BookRepository extends JpaRepository<Book,Long>{
 
     List<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String title, String author);
 
-    @Query("SELECT b FROM Book b WHERE " +
-            "(:title IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
-            "(:author IS NULL OR LOWER(b.author) LIKE LOWER(CONCAT('%', :author, '%')))")
-    List<Book> searchDynamicByAi(@Param("title") String title,@Param("author") String author);
 
+    @Query(value = "SELECT * FROM books ORDER BY RANDOM() LIMIT 5", nativeQuery = true)
+    List<Book> getRandomBooks();
+
+    // Cập nhật câu SQL: Thêm logic tìm theo category và description (dùng biến keyword)
+    @Query("SELECT b FROM Book b WHERE " +
+            "(:title IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', CAST(:title as String), '%'))) AND " +
+            "(:author IS NULL OR LOWER(b.author) LIKE LOWER(CONCAT('%', CAST(:author as String), '%'))) AND " +
+            "(:category IS NULL OR LOWER(b.category) LIKE LOWER(CONCAT('%', CAST(:category as String), '%'))) AND " +
+            "(:keyword IS NULL OR LOWER(b.description) LIKE LOWER(CONCAT('%', CAST(:keyword as String), '%')))")
+    List<Book> searchDynamicByAi(
+            @Param("title") String title,
+            @Param("author") String author,
+            @Param("category") String category, // Tham số mới
+            @Param("keyword") String keyword,   // Tham số mới
+            Sort sort
+    );
 }

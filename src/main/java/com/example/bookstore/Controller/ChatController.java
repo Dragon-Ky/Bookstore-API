@@ -17,15 +17,32 @@ public class ChatController {
 
     @PostMapping("/search")
     public ApiResponse<List<Book>> chatToSearch(@RequestBody Map<String, String> request) {
-        // 1. Lấy biến "message" từ Frontend gửi lên
-        String userMessage = request.get("message");
+        try {
+            // 1. In ra chính xác những gì React đang gửi lên
+            System.out.println("========== BẮT ĐẦU DEBUG ==========");
+            System.out.println("1. Dữ liệu từ React gửi lên: " + request);
 
-        // 2. Gọi Service xử lý
-        List<Book> books = geminiService.processAiChat(userMessage);
+            String userMessage = request.get("message");
+            System.out.println("2. Biến userMessage bóc tách được: " + userMessage);
 
-        // 3. Trả danh sách Sách về dưới dạng chuẩn ApiResponse
-        return ApiResponse.<List<Book>>builder()
-                .result(books)
-                .build();
+            // 3. Gọi Service
+            System.out.println("3. Đang gọi Google Gemini API...");
+            List<Book> books = geminiService.processAiChat(userMessage);
+
+            System.out.println("4. Tìm thấy số sách: " + (books != null ? books.size() : "null"));
+            System.out.println("========== KẾT THÚC THÀNH CÔNG ==========");
+
+            return ApiResponse.<List<Book>>builder()
+                    .result(books)
+                    .build();
+
+        } catch (Exception e) {
+            // 4. Nếu sập ở bất kỳ đâu, in toàn bộ chi tiết lỗi màu đỏ ra Console
+            System.err.println("========== PHÁT HIỆN LỖI SẬP BACKEND ==========");
+            System.err.println("Nguyên nhân chính: " + e.getMessage());
+            e.printStackTrace();
+            System.err.println("===============================================");
+            throw e;
+        }
     }
 }
