@@ -16,11 +16,11 @@ public interface BookMapper {
     BookResponse toBookResponse(Book book);
 
     // Chuyển từ Request sang Entity (để lưu vào DB)
-    @Mapping(target = "categories", source = "category", qualifiedByName = "stringToSet")
+    @Mapping(target = "categories", source = "categories", qualifiedByName = "stringToSet")
     Book toBook(BookRequest request);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "categories", source = "category", qualifiedByName = "stringToSet")
+    @Mapping(target = "categories", source = "categories", qualifiedByName = "stringToSet")
     void updateBook(@MappingTarget Book book, BookRequest bookRequest);
 
     // Logic tách chuỗi: "ANIME, NGON TINH" -> ["ANIME", "NGON TINH"]
