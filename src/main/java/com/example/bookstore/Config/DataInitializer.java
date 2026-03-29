@@ -18,7 +18,7 @@ public class DataInitializer {
     PasswordEncoder passwordEncoder;
     @PostConstruct
     public void initAdminAccount() {
-        String adminEmail = "admin@bookstore.com";
+        String adminEmail = "admin123@bookstore.com";
 
         // Kiểm tra xem admin đã tồn tại chưa để tránh tạo trùng mỗi lần restart
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
@@ -26,7 +26,7 @@ public class DataInitializer {
             admin.setEmail(adminEmail);
 
             // QUAN TRỌNG: Phải mã hóa mật khẩu trước khi lưu
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setPassword(passwordEncoder.encode("admin1234"));
 
             admin.setRole(Role.ADMIN);
 
