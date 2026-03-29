@@ -12,6 +12,8 @@ import com.example.bookstore.Mapper.UserMapper;
 import com.example.bookstore.Repository.PasswordResetTokenRepository;
 import com.example.bookstore.Repository.UserRepository;
 import com.example.bookstore.Security.JwtService;
+import com.example.bookstore.Service.Email.EmailService;
+import com.example.bookstore.Service.Email.GmailEmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -60,20 +62,16 @@ public class UserService {
         // 3. mã hóa mật khẩu
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // [QUAN TRỌNG NHẤT]: Mở khóa tài khoản ngay lập tức để Login được luôn
-        user.setIsActive(true);
-
         // 4. mặc định khi đăng ký là ROLE_USER
         user.setRole(Role.USER);
         userRepository.save(user);
 
-        // Ẩn đoạn Gửi OTP vì Frontend đã làm Ảo rồi
-        // String otp = otpService.createAndSaveOtp(user);
-        // try {
-        //     emailService.sendVerificationEmail(user.getEmail(), otp);
-        // } catch (Exception e) {
-        //     throw new AppException(ErrorCode.OTP_NOT_FOUND);
-        // }
+         String otp = otpService.createAndSaveOtp(user);
+         try {
+             emailService.sendVerificationEmail(user.getEmail(), otp);
+         } catch (Exception e) {
+             throw new AppException(ErrorCode.OTP_NOT_FOUND);
+         }
 
         // 5. Trả về thành công
         return "REGISTER_SUCCESS";

@@ -1,4 +1,43 @@
 package com.example.bookstore.Service.Email;
 
-public class GmailEmailService {
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+@Profile("local") // Chỉ chạy khi cấu hình spring.profiles.active=local
+public class GmailEmailService implements EmailService {
+
+    private final JavaMailSender mailSender;
+
+    @Override
+    public void sendVerificationEmail(String toEmail, String otp) {
+        MimeMessage message = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(toEmail);
+
+            String title = "MÃ XÁC THỰC ";
+            helper.setSubject("[Bookstore] " + title);
+
+            String htmlContent = "<div style='font-family: Arial; text-align: center; border: 1px solid #ddd; padding: 20px;'>" +
+                    "<h3>" + title + "</h3>" +
+                    "<p>Vui lòng nhập mã dưới đây vào ứng dụng của bạn:</p>" +
+                    "<div style='background: #eee; padding: 20px; font-size: 30px; font-weight: bold; letter-spacing: 5px;'>" +
+                    otp + "</div>" +
+                    "<p>Mã có hiệu lực trong 5 phút.</p>" +
+                    "</div>";
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Mail error: " + e.getMessage());
+        }
+    }
 }

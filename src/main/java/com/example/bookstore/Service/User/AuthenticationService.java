@@ -10,6 +10,8 @@ import com.example.bookstore.Exception.ErrorCode;
 import com.example.bookstore.Repository.PasswordResetTokenRepository;
 import com.example.bookstore.Repository.UserRepository;
 import com.example.bookstore.Security.JwtService;
+import com.example.bookstore.Service.Email.EmailService;
+import com.example.bookstore.Service.Email.GmailEmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,6 +31,7 @@ public class AuthenticationService {
     EmailService emailService;
     OtpService otpService;
     PasswordResetTokenRepository tokenRepository;
+
 
     public void resendVerification(String email) {
         // 1. Tìm User đã tồn tại trong DB
