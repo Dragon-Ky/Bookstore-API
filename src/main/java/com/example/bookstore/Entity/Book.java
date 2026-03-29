@@ -33,7 +33,10 @@ public class Book {
     @Column(columnDefinition = "TEXT")
     String author;
 
-    @ElementCollection
+
+    @ElementCollection(fetch = FetchType.EAGER) // EAGER để lấy dữ liệu ngay lập tức, tránh lỗi Lazy load
+    @CollectionTable(name = "book_categories", joinColumns = @JoinColumn(name = "book_id"))
+    @Column(name = "category_name")
     Set<String> categories = new HashSet<>();
 
     @Column(columnDefinition = "TEXT")

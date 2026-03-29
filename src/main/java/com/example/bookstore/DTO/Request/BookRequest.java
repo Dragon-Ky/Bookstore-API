@@ -24,7 +24,7 @@ public class BookRequest {
     String author;
 
     @NotNull(message = "NOT_NULL_CATEGORY")
-    private String categories;
+    private Set<String> categories;
 
     @NotBlank(message = "NOT_BLANK_DESCRIPTION")
     String description;
