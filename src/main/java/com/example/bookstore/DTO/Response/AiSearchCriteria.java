@@ -14,7 +14,7 @@ public class AiSearchCriteria {
     private String author;
 
     // THÊM 2 DÒNG NÀY
-    private String category; // Để hứng thể loại (lãng mạn, trinh thám...)
+    private String categories; // Để hứng thể loại (lãng mạn, trinh thám...)
     private String keyword;  // Để hứng từ khóa nội dung (vũ trụ, tình yêu, ma thuật...)
 
     private String orderParam;

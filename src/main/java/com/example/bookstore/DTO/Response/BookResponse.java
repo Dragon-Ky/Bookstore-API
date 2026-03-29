@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,7 +17,7 @@ public class BookResponse {
      String image;
      String title;
      String author;
-     String category;
+     Set<String> categories;
      String description;
 
      int totalQuantity;

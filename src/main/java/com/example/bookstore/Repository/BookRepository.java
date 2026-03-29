@@ -36,12 +36,12 @@ public interface BookRepository extends JpaRepository<Book,Long>{
     @Query("SELECT b FROM Book b WHERE " +
             "(:title IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', CAST(:title as String), '%'))) AND " +
             "(:author IS NULL OR LOWER(b.author) LIKE LOWER(CONCAT('%', CAST(:author as String), '%'))) AND " +
-            "(:category IS NULL OR LOWER(b.category) LIKE LOWER(CONCAT('%', CAST(:category as String), '%'))) AND " +
+            "(:categories IS NULL OR LOWER(b.categories) LIKE LOWER(CONCAT('%', CAST(:categories as String), '%'))) AND " +
             "(:keyword IS NULL OR LOWER(b.description) LIKE LOWER(CONCAT('%', CAST(:keyword as String), '%')))")
     List<Book> searchDynamicByAi(
             @Param("title") String title,
             @Param("author") String author,
-            @Param("category") String category, // Tham số mới
+            @Param("categories") String categories, // Tham số mới
             @Param("keyword") String keyword,   // Tham số mới
             Sort sort
     );

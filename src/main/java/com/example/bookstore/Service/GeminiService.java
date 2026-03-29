@@ -94,7 +94,7 @@ public class GeminiService {
                 // Truy vấn DB dựa trên phân tích của AI
                 return bookRepository.searchDynamicByAi(
                         criteria.getTitle(), criteria.getAuthor(),
-                        criteria.getCategory(), criteria.getKeyword(), sort
+                        criteria.getCategories(), criteria.getKeyword(), sort
                 );
 
             } catch (Exception e) {

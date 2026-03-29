@@ -24,9 +24,9 @@ import java.util.List;
 @RequiredArgsConstructor // Tự tạo constructor cho các field 'final'
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookService {
-    final BookRepository bookRepository;
+    BookRepository bookRepository;
 
-    final BookMapper bookMapper;
+   BookMapper bookMapper;
 
     @Transactional
     public BookResponse creatBook(BookRequest request){

@@ -33,9 +33,7 @@ public class Book {
     @Column(columnDefinition = "TEXT")
     String author;
 
-    @ElementCollection // Tạo bảng phụ chứa danh sách category
-    @CollectionTable(name = "book_categories", joinColumns = @JoinColumn(name = "book_id"))
-    @Column(name = "category_name")
+    @ElementCollection
     Set<String> categories = new HashSet<>();
 
     @Column(columnDefinition = "TEXT")
