@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@Profile("prod") // Chỉ chạy khi cấu hình SPRING_PROFILES_ACTIVE=prod
+@Profile({"prod", "default"}) // Chạy trên Render (mặc định) hoặc khi cấu hình prod
 public class ResendEmailService implements EmailService {
 
     @Value("${resend.api.key}")
