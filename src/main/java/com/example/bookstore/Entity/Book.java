@@ -5,6 +5,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "books")
 @Getter
@@ -30,7 +33,11 @@ public class Book {
     @Column(columnDefinition = "TEXT")
     String author;
 
-    String category;
+    @ElementCollection // Tạo bảng phụ chứa danh sách category
+    @CollectionTable(name = "book_categories", joinColumns = @JoinColumn(name = "book_id"))
+    @Column(name = "category_name")
+    Set<String> categories = new HashSet<>();
+
     @Column(columnDefinition = "TEXT")
     String description;
 

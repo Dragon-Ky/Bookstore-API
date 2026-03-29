@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookRequest {
@@ -22,7 +24,7 @@ public class BookRequest {
     String author;
 
     @NotNull(message = "NOT_NULL_CATEGORY")
-    String category;
+    Set<String> categories;
 
     @NotBlank(message = "NOT_BLANK_DESCRIPTION")
     String description;
