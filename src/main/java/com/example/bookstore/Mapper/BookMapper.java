@@ -12,26 +12,28 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BookMapper {
 
-    // Chuyển từ Entity sang Response (để hiển thị)
+    // 1. Ánh xạ từ Entity sang Response
     BookResponse toBookResponse(Book book);
 
-    // Chuyển từ Request sang Entity (để lưu vào DB)
+    // 2. Ánh xạ từ Request sang Entity
+    // Nếu trong BookRequest.java bạn để trường là String categories:
     @Mapping(target = "categories", source = "categories", qualifiedByName = "stringToSet")
     Book toBook(BookRequest request);
 
+    // 3. Cập nhật Entity từ Request
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "categories", source = "categories", qualifiedByName = "stringToSet")
     void updateBook(@MappingTarget Book book, BookRequest bookRequest);
 
-    // Logic tách chuỗi: "ANIME, NGON TINH" -> ["ANIME", "NGON TINH"]
+    // CHÚ Ý: Phải có @Named và đặt TRONG interface như một default method
     @Named("stringToSet")
-    default Set<String> stringToSet(String category) {
-        if (category == null || category.isBlank()) {
+    default Set<String> stringToSet(String categoriesStr) {
+        if (categoriesStr == null || categoriesStr.isBlank()) {
             return null;
         }
-        return Arrays.stream(category.split(",")) // Tách theo dấu phẩy
-                .map(String::trim)          // Xóa khoảng trắng thừa
-                .filter(s -> !s.isEmpty())  // Loại bỏ các phần tử rỗng
+        return Arrays.stream(categoriesStr.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
                 .collect(Collectors.toSet());
     }
 }
